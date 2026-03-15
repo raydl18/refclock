@@ -59,8 +59,8 @@ function drawIcon(size) {
     ctx.closePath();
   }
 
-  // Center pentagon (point up)
-  pentagon(bx, by, patchR, -90);
+  // Center pentagon (point up, slightly bigger)
+  pentagon(bx, by, patchR * 1.3, -90);
   ctx.fill();
 
   // 5 surrounding pentagons — each rotated to face outward
