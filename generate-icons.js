@@ -49,26 +49,16 @@ function drawIcon(size) {
   const patchDist = ballR * 0.88;
   ctx.fillStyle = '#1a1a2e';
 
-  function pentagon(px, py, pr, rotation) {
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-      const a = (i * 72 + rotation) * Math.PI / 180;
-      i === 0 ? ctx.moveTo(px + Math.cos(a) * pr, py + Math.sin(a) * pr)
-              : ctx.lineTo(px + Math.cos(a) * pr, py + Math.sin(a) * pr);
-    }
-    ctx.closePath();
-  }
-
-  // Center pentagon (point up, slightly bigger)
-  pentagon(bx, by, patchR * 1.3, -90);
+  // Center circle (slightly bigger)
+  ctx.beginPath();
+  ctx.arc(bx, by, patchR * 1.3, 0, Math.PI * 2);
   ctx.fill();
 
-  // 5 surrounding pentagons — each rotated to face outward
+  // 5 surrounding circles
   for (let i = 0; i < 5; i++) {
     const angle = (i * 72 - 90) * Math.PI / 180;
-    const px = bx + Math.cos(angle) * patchDist;
-    const py = by + Math.sin(angle) * patchDist;
-    pentagon(px, py, patchR, i * 72 - 90);
+    ctx.beginPath();
+    ctx.arc(bx + Math.cos(angle) * patchDist, by + Math.sin(angle) * patchDist, patchR, 0, Math.PI * 2);
     ctx.fill();
   }
 
