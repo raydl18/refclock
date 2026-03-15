@@ -45,8 +45,8 @@ function drawIcon(size) {
   ctx.arc(bx, by, ballR - 1, 0, Math.PI * 2);
   ctx.clip();
 
-  const patchR    = ballR * 0.18;
-  const patchDist = ballR * 0.62;
+  const patchR    = ballR * 0.24;
+  const patchDist = ballR * 0.88; // patches 25% clipped by ball edge
   ctx.fillStyle = '#1a1a2e';
 
   // Center patch
