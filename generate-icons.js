@@ -46,7 +46,7 @@ function drawIcon(size) {
   ctx.clip();
 
   const patchR    = ballR * 0.259; // 40% smaller
-  const patchDist = ballR * 0.88;
+  const patchDist = ballR * 0.96;
   ctx.fillStyle = '#1a1a2e';
 
   // Center circle (slightly bigger)
