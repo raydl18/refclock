@@ -45,30 +45,30 @@ function drawIcon(size) {
   ctx.arc(bx, by, ballR - 1, 0, Math.PI * 2);
   ctx.clip();
 
-  const patchR    = ballR * 0.432; // 50% bigger than previous 0.288
+  const patchR    = ballR * 0.259; // 40% smaller
   const patchDist = ballR * 0.88;
   ctx.fillStyle = '#1a1a2e';
 
-  function hexagon(px, py, pr, rotation) {
+  function pentagon(px, py, pr, rotation) {
     ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-      const a = (i * 60 + rotation) * Math.PI / 180;
+    for (let i = 0; i < 5; i++) {
+      const a = (i * 72 + rotation) * Math.PI / 180;
       i === 0 ? ctx.moveTo(px + Math.cos(a) * pr, py + Math.sin(a) * pr)
               : ctx.lineTo(px + Math.cos(a) * pr, py + Math.sin(a) * pr);
     }
     ctx.closePath();
   }
 
-  // Center hexagon (flat-top)
-  hexagon(bx, by, patchR, 0);
+  // Center pentagon (point up)
+  pentagon(bx, by, patchR, -90);
   ctx.fill();
 
-  // 5 surrounding hexagons — each rotated to face outward
+  // 5 surrounding pentagons — each rotated to face outward
   for (let i = 0; i < 5; i++) {
     const angle = (i * 72 - 90) * Math.PI / 180;
     const px = bx + Math.cos(angle) * patchDist;
     const py = by + Math.sin(angle) * patchDist;
-    hexagon(px, py, patchR, i * 72 - 90 + 30);
+    pentagon(px, py, patchR, i * 72 - 90);
     ctx.fill();
   }
 
