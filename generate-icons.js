@@ -45,20 +45,30 @@ function drawIcon(size) {
   ctx.arc(bx, by, ballR - 1, 0, Math.PI * 2);
   ctx.clip();
 
-  const patchR    = ballR * 0.288;
-  const patchDist = ballR * 0.88; // patches 25% clipped by ball edge
+  const patchR    = ballR * 0.432; // 50% bigger than previous 0.288
+  const patchDist = ballR * 0.88;
   ctx.fillStyle = '#1a1a2e';
 
-  // Center patch
-  ctx.beginPath();
-  ctx.arc(bx, by, patchR, 0, Math.PI * 2);
+  function hexagon(px, py, pr, rotation) {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = (i * 60 + rotation) * Math.PI / 180;
+      i === 0 ? ctx.moveTo(px + Math.cos(a) * pr, py + Math.sin(a) * pr)
+              : ctx.lineTo(px + Math.cos(a) * pr, py + Math.sin(a) * pr);
+    }
+    ctx.closePath();
+  }
+
+  // Center hexagon (flat-top)
+  hexagon(bx, by, patchR, 0);
   ctx.fill();
 
-  // 5 surrounding patches
+  // 5 surrounding hexagons — each rotated to face outward
   for (let i = 0; i < 5; i++) {
     const angle = (i * 72 - 90) * Math.PI / 180;
-    ctx.beginPath();
-    ctx.arc(bx + Math.cos(angle) * patchDist, by + Math.sin(angle) * patchDist, patchR, 0, Math.PI * 2);
+    const px = bx + Math.cos(angle) * patchDist;
+    const py = by + Math.sin(angle) * patchDist;
+    hexagon(px, py, patchR, i * 72 - 90 + 30);
     ctx.fill();
   }
 
