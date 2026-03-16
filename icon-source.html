@@ -12,35 +12,64 @@
     width: 512px; height: 512px;
     background: #1a1a2e;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    gap: 0;
     position: relative;
   }
-  svg.ring {
-    position: absolute;
-    inset: 0;
-    width: 512px;
-    height: 512px;
-  }
-  .ball { font-size: 210px; line-height: 1; z-index: 1; margin-top: -10px; }
   .label {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    font-size: 60px;
+    font-size: 58px;
     font-weight: 900;
     letter-spacing: 5px;
     color: #4ade80;
-    margin-top: 8px;
+    margin-top: 6px;
     z-index: 1;
   }
 </style>
 </head>
 <body>
   <div class="icon">
-    <svg class="ring" viewBox="0 0 512 512">
-      <circle cx="256" cy="256" r="242" fill="none" stroke="#4ade80" stroke-width="28"/>
+
+    <!-- Green ring -->
+    <svg style="position:absolute;inset:0" width="512" height="512" viewBox="0 0 512 512">
+      <circle cx="256" cy="256" r="242" fill="none" stroke="#4ade80" stroke-width="26"/>
     </svg>
-    <div class="ball">⚽</div>
+
+    <!-- Whistle SVG -->
+    <svg width="300" height="200" viewBox="0 0 300 200" style="z-index:1; margin-top:-10px">
+      <g transform="rotate(-20, 150, 100)">
+
+        <!-- Lanyard ring -->
+        <circle cx="58" cy="62" r="18" fill="none" stroke="#dc2626" stroke-width="11"/>
+
+        <!-- Pea chamber (round ball) -->
+        <circle cx="72" cy="100" r="60" fill="#dc2626"/>
+        <!-- Highlight on ball -->
+        <circle cx="52" cy="80" r="18" fill="rgba(255,255,255,0.18)"/>
+        <!-- Inner shadow on ball -->
+        <circle cx="72" cy="100" r="60" fill="none" stroke="#b91c1c" stroke-width="6"/>
+
+        <!-- Body tapers from ball to mouthpiece -->
+        <polygon points="108,68 240,80 240,120 108,132" fill="#dc2626"/>
+        <!-- Bottom shading on body -->
+        <polygon points="108,100 240,100 240,120 108,132" fill="#b91c1c"/>
+
+        <!-- Mouthpiece -->
+        <rect x="236" y="78" width="52" height="44" rx="10" fill="#dc2626"/>
+        <rect x="236" y="100" width="52" height="22" rx="0" fill="#b91c1c" style="border-radius:0 0 10px 10px"/>
+        <!-- Mouthpiece end cap -->
+        <rect x="282" y="78" width="8" height="44" rx="4" fill="#991b1b"/>
+
+        <!-- Air hole / aperture on top of body -->
+        <ellipse cx="185" cy="79" rx="16" ry="9" fill="#991b1b"/>
+
+        <!-- Pea inside ball (small circle) -->
+        <circle cx="72" cy="100" r="14" fill="#b91c1c"/>
+      </g>
+    </svg>
+
     <div class="label">RefClock</div>
   </div>
 </body>
