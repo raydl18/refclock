@@ -346,22 +346,6 @@
     }
     #btn-end-game:active { transform: scale(0.96); background: #6d28d9; }
 
-    #btn-fullscreen {
-      width: 100%;
-      padding: 7px 4px;
-      border: none;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.08);
-      color: #aaa;
-      font-size: 0.6rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    #btn-fullscreen:active { background: rgba(255,255,255,0.15); }
-
     /* ─── MODAL ────────────────────────────────────── */
     #modal-overlay {
       display: none;
@@ -682,7 +666,6 @@
       <button class="ctrl-btn" id="btn-pause" disabled>⏸</button>
     </div>
     <button id="btn-end-game">End Game</button>
-    <button id="btn-fullscreen">⛶ Full</button>
   </div>
 
   <!-- RIGHT TEAM -->
@@ -833,7 +816,6 @@
 
     setupScreen.style.display = 'none';
     gameScreen.classList.add('active');
-    enterFullscreen();
   });
 
   function applyTeamColors() {
@@ -1076,37 +1058,6 @@
     endgameOverlay.classList.remove('show');
     gameScreen.classList.remove('active');
     setupScreen.style.display = '';
-  });
-
-  /* ── Fullscreen ──────────────────────────── */
-  async function enterFullscreen() {
-    const el = document.documentElement;
-    try {
-      if (el.requestFullscreen) await el.requestFullscreen();
-      else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
-    } catch(_) {}
-  }
-
-  async function exitFullscreen() {
-    try {
-      if (document.exitFullscreen) await document.exitFullscreen();
-      else if (document.webkitExitFullscreen) await document.webkitExitFullscreen();
-    } catch(_) {}
-  }
-
-  function isFullscreen() {
-    return !!(document.fullscreenElement || document.webkitFullscreenElement);
-  }
-
-  function updateFullscreenBtn() {
-    $('btn-fullscreen').textContent = isFullscreen() ? '⛶ Exit' : '⛶ Full';
-  }
-
-  document.addEventListener('fullscreenchange', updateFullscreenBtn);
-  document.addEventListener('webkitfullscreenchange', updateFullscreenBtn);
-
-  $('btn-fullscreen').addEventListener('click', () => {
-    isFullscreen() ? exitFullscreen() : enterFullscreen();
   });
 
   /* ── Service worker ─────────────────────── */
