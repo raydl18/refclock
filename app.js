@@ -564,6 +564,7 @@ function showSavedBadge() {
   badge.textContent = 'Saved';
   badge.classList.add('show');
   setTimeout(() => badge.classList.remove('show'), 2500);
+}
 
 btnNewGame.addEventListener('click', () => {
   endgameOverlay.classList.remove('show');
