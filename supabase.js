@@ -1,6 +1,6 @@
 /* Supabase client — configure these two constants before deploying */
-const SUPABASE_URL     = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL     = 'https://glrecozajprxtxtfiped.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_MrasY7nJvnsGC1WKvVlTZg_CW3qfHxj';
 
 const _client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
