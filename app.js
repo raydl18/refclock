@@ -90,6 +90,7 @@ $('btn-start-game').addEventListener('click', async () => {
   btnPause.disabled = true;
 
   clearSavedState();
+  $('notes-ingame').value = loadNotes();
   setupScreen.style.display = 'none';
   gameScreen.classList.add('active');
 
@@ -241,6 +242,7 @@ function restoreSavedGame() {
     updateClockColor();
     periodEl.textContent = state.currentHalf === 1 ? '1st Half' : '2nd Half';
 
+    $('notes-ingame').value = loadNotes();
     setupScreen.style.display = 'none';
     gameScreen.classList.add('active');
 
@@ -532,12 +534,41 @@ function showEndGame() {
     </div>
   `;
 
+  $('notes-endgame').value = loadNotes();
   endgameOverlay.classList.add('show');
+
+  if (currentUser) {
+    const record = {
+      user_id:           currentUser.id,
+      home_team:         a.name,
+      away_team:         b.name,
+      home_score:        a.score,
+      away_score:        b.score,
+      duration_per_half: state.totalSeconds,
+      events:            state.events,
+      notes:             loadNotes(),
+    };
+    SupabaseAPI.saveGame(record).then(error => {
+      if (!error) showSavedBadge();
+    });
+  }
 }
+
+function showSavedBadge() {
+  let badge = $('saved-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'saved-badge';
+    endgameOverlay.appendChild(badge);
+  }
+  badge.textContent = 'Saved';
+  badge.classList.add('show');
+  setTimeout(() => badge.classList.remove('show'), 2500);
 
 btnNewGame.addEventListener('click', () => {
   endgameOverlay.classList.remove('show');
   gameScreen.classList.remove('active');
+  saveNotes('');
   setupScreen.style.display = '';
 });
 
@@ -556,4 +587,122 @@ btnPlay.addEventListener('click', async () => {
     if ('wakeLock' in navigator)
       wakeLock = await navigator.wakeLock.request('screen');
   } catch(_) {}
+});
+
+/* ── Auth UI ─────────────────────────────── */
+let currentUser = null;
+
+function setAuthState(user) {
+  currentUser = user;
+  const signedOut = $('auth-signed-out');
+  const form      = $('auth-form');
+  const signedIn  = $('auth-signed-in');
+  const msg       = $('auth-msg');
+  if (user) {
+    signedOut.style.display = 'none';
+    form.style.display      = 'none';
+    msg.style.display       = 'none';
+    signedIn.style.display  = '';
+    $('auth-user-email').textContent = user.email;
+  } else {
+    signedOut.style.display = '';
+    form.style.display      = 'none';
+    msg.style.display       = 'none';
+    signedIn.style.display  = 'none';
+  }
+}
+
+$('btn-signin-show').addEventListener('click', () => {
+  $('auth-signed-out').style.display = 'none';
+  $('auth-form').style.display = '';
+  $('auth-email-input').focus();
+});
+
+$('btn-signin-cancel').addEventListener('click', () => {
+  $('auth-form').style.display = 'none';
+  $('auth-signed-out').style.display = '';
+});
+
+$('btn-signin-submit').addEventListener('click', async () => {
+  const email = $('auth-email-input').value.trim();
+  if (!email) return;
+  const btn = $('btn-signin-submit');
+  btn.disabled = true;
+  btn.textContent = '...';
+  const error = await SupabaseAPI.signIn(email);
+  btn.disabled = false;
+  btn.textContent = 'Send link';
+  $('auth-form').style.display = 'none';
+  const msg = $('auth-msg');
+  msg.style.display = '';
+  if (error) {
+    msg.textContent = 'Error — try again';
+    msg.style.color = '#f87171';
+    setTimeout(() => { msg.style.display = 'none'; $('auth-signed-out').style.display = ''; }, 3000);
+  } else {
+    msg.textContent = 'Check your email';
+    msg.style.color = '#4ade80';
+  }
+});
+
+$('btn-signout').addEventListener('click', async () => {
+  await SupabaseAPI.signOut();
+  setAuthState(null);
+});
+
+SupabaseAPI.onAuthStateChange(user => {
+  setAuthState(user);
+  $('btn-history').style.display = user ? '' : 'none';
+});
+
+/* ── History ─────────────────────────────────── */
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+async function openHistory() {
+  const list = $('history-list');
+  list.innerHTML = '<div class="history-loading">Loading…</div>';
+  $('history-overlay').classList.add('show');
+
+  const games = await SupabaseAPI.fetchGames();
+  if (!games.length) {
+    list.innerHTML = '<div class="history-empty">No saved games yet.</div>';
+    return;
+  }
+
+  list.innerHTML = games.map(g => `
+    <div class="history-item">
+      <div class="history-item-score">
+        <span>${g.home_team}</span>
+        <span>${g.home_score} – ${g.away_score}</span>
+        <span>${g.away_team}</span>
+      </div>
+      <div class="history-item-meta">${fmtDate(g.created_at)}</div>
+      ${g.notes ? `<div class="history-item-notes">${g.notes.replace(/</g,'&lt;')}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+$('btn-history').addEventListener('click', openHistory);
+$('btn-history-close').addEventListener('click', () => {
+  $('history-overlay').classList.remove('show');
+});
+
+/* ── Notes ───────────────────────────────────── */
+function loadNotes() {
+  return localStorage.getItem('refclock_notes') || '';
+}
+
+function saveNotes(text) {
+  localStorage.setItem('refclock_notes', text);
+}
+
+$('notes-ingame').addEventListener('input', () => {
+  saveNotes($('notes-ingame').value);
+});
+
+$('notes-endgame').addEventListener('input', () => {
+  saveNotes($('notes-endgame').value);
 });

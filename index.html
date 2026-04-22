@@ -15,6 +15,24 @@
 
 <!-- ═══════════════ SETUP SCREEN ═══════════════ -->
 <div id="setup-screen">
+
+  <!-- Auth bar (top-right corner) -->
+  <div id="auth-bar">
+    <div id="auth-signed-out">
+      <button class="auth-btn auth-btn-ghost" id="btn-signin-show">Sign in</button>
+    </div>
+    <div id="auth-form" style="display:none">
+      <input type="email" id="auth-email-input" placeholder="your@email.com" />
+      <button class="auth-btn auth-btn-primary" id="btn-signin-submit">Send link</button>
+      <button class="auth-btn auth-btn-ghost" id="btn-signin-cancel">Cancel</button>
+    </div>
+    <span id="auth-msg" style="display:none"></span>
+    <div id="auth-signed-in" style="display:none">
+      <span id="auth-user-email"></span>
+      <button class="auth-btn auth-btn-ghost" id="btn-signout">Sign out</button>
+    </div>
+  </div>
+
   <h1>RefClock</h1>
 
   <div class="setup-row">
@@ -46,6 +64,16 @@
   </div>
 
   <button id="btn-start-game">Kick Off</button>
+  <button id="btn-history" style="display:none">History</button>
+</div>
+
+<!-- ═══════════════ HISTORY OVERLAY ══════════ -->
+<div id="history-overlay">
+  <div id="history-header">
+    <span id="history-title">Match History</span>
+    <button id="btn-history-close">✕</button>
+  </div>
+  <div id="history-list"></div>
 </div>
 
 <!-- ═══════════════ GAME SCREEN ════════════════ -->
@@ -84,6 +112,11 @@
       <button class="stoppage-btn" id="btn-stoppage">+ Time</button>
     </div>
     <button id="btn-end-game">End Game</button>
+    <!-- Collapsible notes -->
+    <details id="notes-details">
+      <summary id="notes-summary">Notes</summary>
+      <textarea id="notes-ingame" placeholder="Match notes…" rows="4"></textarea>
+    </details>
   </div>
 
   <!-- RIGHT TEAM -->
@@ -143,9 +176,16 @@
     <div class="stats-row" id="stats-row"></div>
   </div>
 
+  <div class="notes-endgame-section">
+    <label class="notes-label">Notes</label>
+    <textarea id="notes-endgame" placeholder="Match notes…" rows="3"></textarea>
+  </div>
+
   <button id="btn-new-game">New Game</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
 <script src="app.js" defer></script>
 </body>
 </html>
