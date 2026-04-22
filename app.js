@@ -118,9 +118,7 @@ function tick() {
 
   clockEl.textContent = fmt(state.remaining);
   updateClockColor();
-
-  const halfPt = state.totalSeconds / 2;
-  periodEl.textContent = state.elapsedSeconds <= halfPt ? '1st Half' : '2nd Half';
+  periodEl.textContent = state.currentHalf === 1 ? '1st Half' : '2nd Half';
 
   saveState();
 
@@ -128,16 +126,35 @@ function tick() {
     clearInterval(timerInterval);
     timerInterval = null;
     state.running = false;
-    statusEl.textContent = 'Full Time';
-    btnPlay.disabled  = true;
     btnPause.disabled = true;
     clockEl.classList.add('danger');
-    clearSavedState();
+
+    if (state.currentHalf === 1) {
+      statusEl.textContent = 'Half Time';
+      btnPlay.disabled = false;  // pressing play will start 2nd half
+    } else {
+      statusEl.textContent = 'Full Time';
+      btnPlay.disabled = true;
+      clearSavedState();
+    }
   }
 }
 
 function startTimer() {
-  if (state.running || state.remaining <= 0) return;
+  if (state.running) return;
+
+  // Transition from end of 1st half into 2nd half
+  if (state.remaining <= 0 && state.currentHalf === 1) {
+    state.currentHalf = 2;
+    state.remaining = state.totalSeconds;
+    state.elapsedSeconds = 0;
+    clockEl.textContent = fmt(state.remaining);
+    clockEl.classList.remove('warning', 'danger');
+    periodEl.textContent = '2nd Half';
+  }
+
+  if (state.remaining <= 0) return;
+
   state.startEpoch = Date.now();
   state.remainingAtStart = state.remaining;
   state.running = true;
@@ -222,17 +239,21 @@ function restoreSavedGame() {
     state.events.forEach(ev => addEventToLog(ev.team, ev));
     clockEl.textContent = fmt(state.remaining);
     updateClockColor();
-    const halfPt = state.totalSeconds / 2;
-    periodEl.textContent = state.elapsedSeconds <= halfPt ? '1st Half' : '2nd Half';
+    periodEl.textContent = state.currentHalf === 1 ? '1st Half' : '2nd Half';
 
     setupScreen.style.display = 'none';
     gameScreen.classList.add('active');
 
     if (state.remaining <= 0) {
-      statusEl.textContent = 'Full Time';
-      btnPlay.disabled = true;
-      btnPause.disabled = true;
       clockEl.classList.add('danger');
+      btnPause.disabled = true;
+      if (state.currentHalf === 1) {
+        statusEl.textContent = 'Half Time';
+        btnPlay.disabled = false;
+      } else {
+        statusEl.textContent = 'Full Time';
+        btnPlay.disabled = true;
+      }
     } else if (wasRunning) {
       startTimer();
     } else {
@@ -256,20 +277,15 @@ function scheduleNotifications() {
   const sw = navigator.serviceWorker && navigator.serviceWorker.controller;
   if (!sw) return;
 
-  const halfPt = state.totalSeconds / 2;
   const score = `${state.teams[0].name} ${state.teams[0].score} – ${state.teams[1].score} ${state.teams[1].name}`;
+  const isFirstHalf = state.currentHalf === 1;
 
-  if (state.remaining > halfPt) {
-    sw.postMessage({
-      type: 'SCHEDULE_NOTIF', tag: 'refclock-half',
-      delay: (state.remainingAtStart - halfPt) * 1000,
-      title: 'Half Time ⚽', body: score,
-    });
-  }
   sw.postMessage({
-    type: 'SCHEDULE_NOTIF', tag: 'refclock-full',
+    type: 'SCHEDULE_NOTIF',
+    tag: isFirstHalf ? 'refclock-half' : 'refclock-full',
     delay: state.remainingAtStart * 1000,
-    title: 'Full Time 🏁', body: score,
+    title: isFirstHalf ? 'Half Time ⚽' : 'Full Time 🏁',
+    body: score,
   });
 }
 
@@ -286,17 +302,21 @@ document.addEventListener('visibilitychange', () => {
     state.elapsedSeconds = state.totalSeconds - state.remaining;
     clockEl.textContent = fmt(state.remaining);
     updateClockColor();
-    const halfPt = state.totalSeconds / 2;
-    periodEl.textContent = state.elapsedSeconds <= halfPt ? '1st Half' : '2nd Half';
+    periodEl.textContent = state.currentHalf === 1 ? '1st Half' : '2nd Half';
     if (state.remaining <= 0) {
       clearInterval(timerInterval);
       timerInterval = null;
       state.running = false;
-      statusEl.textContent = 'Full Time';
-      btnPlay.disabled = true;
       btnPause.disabled = true;
       clockEl.classList.add('danger');
-      clearSavedState();
+      if (state.currentHalf === 1) {
+        statusEl.textContent = 'Half Time';
+        btnPlay.disabled = false;
+      } else {
+        statusEl.textContent = 'Full Time';
+        btnPlay.disabled = true;
+        clearSavedState();
+      }
     }
   }
 });
