@@ -325,6 +325,42 @@ btnPlay.addEventListener('click', startTimer);
 btnPause.addEventListener('click', pauseTimer);
 btnEndGame.addEventListener('click', showEndGame);
 
+/* ── Stoppage time ───────────────────────── */
+function adjustTime(deltaSecs) {
+  if (state.running) {
+    const elapsed = Math.floor((Date.now() - state.startEpoch) / 1000);
+    const newRemaining = Math.max(0, (state.remainingAtStart - elapsed) + deltaSecs);
+    state.remainingAtStart = elapsed + newRemaining;
+    state.remaining = newRemaining;
+    scheduleNotifications();
+  } else {
+    state.remaining = Math.max(0, state.remaining + deltaSecs);
+  }
+
+  state.elapsedSeconds = state.totalSeconds - state.remaining;
+  clockEl.textContent = fmt(state.remaining);
+  updateClockColor();
+
+  // Re-enable play if time was added to a stopped-at-zero clock
+  if (!state.running && state.remaining > 0) {
+    btnPlay.disabled = false;
+    clockEl.classList.remove('danger');
+    updateClockColor();
+    if (statusEl.textContent === 'Half Time' || statusEl.textContent === 'Full Time') {
+      statusEl.textContent = 'Paused';
+    }
+  }
+
+  saveState();
+}
+
+function stoppageSecs() {
+  return Math.max(1, parseInt($('stoppage-secs').value) || 30);
+}
+
+$('btn-stoppage').addEventListener('click', () => adjustTime(stoppageSecs()));
+$('btn-retract').addEventListener('click', () => adjustTime(-stoppageSecs()));
+
 /* ── Modal ───────────────────────────────── */
 let pendingEvent = null; // { team: 0|1, type: 'goal'|'card' }
 let selectedCard = 'yellow';
