@@ -296,28 +296,32 @@ function cancelNotifications() {
 
 /* ── Visibility change (re-sync on app resume) ── */
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && state.running && state.startEpoch) {
-    const elapsed = Math.floor((Date.now() - state.startEpoch) / 1000);
-    state.remaining = Math.max(0, state.remainingAtStart - elapsed);
-    state.elapsedSeconds = state.totalSeconds - state.remaining;
-    clockEl.textContent = fmt(state.remaining);
-    updateClockColor();
-    periodEl.textContent = state.currentHalf === 1 ? '1st Half' : '2nd Half';
-    if (state.remaining <= 0) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      state.running = false;
-      btnPause.disabled = true;
-      clockEl.classList.add('danger');
-      if (state.currentHalf === 1) {
-        statusEl.textContent = 'Half Time';
-        btnPlay.disabled = false;
-      } else {
-        statusEl.textContent = 'Full Time';
-        btnPlay.disabled = true;
-        clearSavedState();
-      }
+  if (document.hidden || !state.running || !state.startEpoch) return;
+
+  const elapsed = Math.floor((Date.now() - state.startEpoch) / 1000);
+  state.remaining = Math.max(0, state.remainingAtStart - elapsed);
+  state.elapsedSeconds = state.totalSeconds - state.remaining;
+  clockEl.textContent = fmt(state.remaining);
+  updateClockColor();
+  periodEl.textContent = state.currentHalf === 1 ? '1st Half' : '2nd Half';
+
+  if (state.remaining <= 0) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    state.running = false;
+    btnPause.disabled = true;
+    clockEl.classList.add('danger');
+    if (state.currentHalf === 1) {
+      statusEl.textContent = 'Half Time';
+      btnPlay.disabled = false;
+    } else {
+      statusEl.textContent = 'Full Time';
+      btnPlay.disabled = true;
+      clearSavedState();
     }
+  } else {
+    // Re-schedule notifications in case the SW was killed while backgrounded
+    scheduleNotifications();
   }
 });
 
