@@ -5,12 +5,13 @@ const state = {
     { name: 'Away', color: '#dc2626', score: 0 }
   ],
   events: [],          // { team, type, player, cardType, timestamp, elapsed }
-  totalSeconds: 2700,
+  totalSeconds: 2700,  // per-half duration
+  currentHalf: 1,      // 1 or 2
   remaining: 2700,
-  remainingAtStart: 2700, // remaining when timer was last started
-  startEpoch: null,       // Date.now() when timer was last started
+  remainingAtStart: 2700,
+  startEpoch: null,
   running: false,
-  elapsedSeconds: 0,
+  elapsedSeconds: 0,   // elapsed within current half
 };
 let timerInterval = null;
 
@@ -26,8 +27,8 @@ function textColor(hex) {
 }
 
 function elapsedLabel() {
-  const e = state.elapsedSeconds;
-  return `${pad(Math.floor(e/60))}'`;
+  const cumulative = (state.currentHalf - 1) * state.totalSeconds + state.elapsedSeconds;
+  return `${pad(Math.floor(cumulative/60))}'`;
 }
 
 /* ── DOM refs ────────────────────────────── */
@@ -62,6 +63,7 @@ $('btn-start-game').addEventListener('click', async () => {
   const mins = Math.max(1, parseInt($('input-min').value)||45);
   const secs = Math.min(59, Math.max(0, parseInt($('input-sec').value)||0));
   state.totalSeconds = mins*60 + secs;
+  state.currentHalf = 1;
   state.remaining    = state.totalSeconds;
   state.remainingAtStart = state.totalSeconds;
   state.startEpoch = null;
@@ -177,6 +179,7 @@ function saveState() {
       teams: state.teams,
       events: state.events,
       totalSeconds: state.totalSeconds,
+      currentHalf: state.currentHalf,
       remaining: state.remaining,
       remainingAtStart: state.remainingAtStart,
       startEpoch: state.startEpoch,
@@ -199,6 +202,7 @@ function restoreSavedGame() {
     state.teams = s.teams;
     state.events = s.events || [];
     state.totalSeconds = s.totalSeconds;
+    state.currentHalf = s.currentHalf || 1;
 
     const wasRunning = !!(s.running && s.startEpoch);
     if (wasRunning) {
