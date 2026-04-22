@@ -4,8 +4,20 @@ const SUPABASE_ANON_KEY = 'sb_publishable_MrasY7nJvnsGC1WKvVlTZg_CW3qfHxj';
 
 const _client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-async function signIn(email) {
-  const { error } = await _client.auth.signInWithOtp({ email });
+async function signUp(email, password) {
+  const { data, error } = await _client.auth.signUp({ email, password });
+  return { user: data?.user, error };
+}
+
+async function signInWithPassword(email, password) {
+  const { data, error } = await _client.auth.signInWithPassword({ email, password });
+  return { user: data?.user, error };
+}
+
+async function resetPassword(email) {
+  const { error } = await _client.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://raydl18.github.io/refclock',
+  });
   return error;
 }
 
@@ -39,4 +51,4 @@ function onAuthStateChange(callback) {
   });
 }
 
-window.SupabaseAPI = { signIn, signOut, getUser, saveGame, fetchGames, onAuthStateChange };
+window.SupabaseAPI = { signUp, signInWithPassword, resetPassword, signOut, getUser, saveGame, fetchGames, onAuthStateChange };

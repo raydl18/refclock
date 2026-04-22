@@ -595,55 +595,107 @@ let currentUser = null;
 
 function setAuthState(user) {
   currentUser = user;
-  const signedOut = $('auth-signed-out');
-  const form      = $('auth-form');
-  const signedIn  = $('auth-signed-in');
-  const msg       = $('auth-msg');
   if (user) {
-    signedOut.style.display = 'none';
-    form.style.display      = 'none';
-    msg.style.display       = 'none';
-    signedIn.style.display  = '';
-    $('auth-user-email').textContent = user.email;
+    $('auth-signed-out').style.display = 'none';
+    $('auth-signed-in').style.display  = '';
+    $('auth-user-email').textContent   = user.email;
+    $('btn-history').style.display     = '';
+    closeAuthModal();
   } else {
-    signedOut.style.display = '';
-    form.style.display      = 'none';
-    msg.style.display       = 'none';
-    signedIn.style.display  = 'none';
+    $('auth-signed-out').style.display = '';
+    $('auth-signed-in').style.display  = 'none';
+    $('btn-history').style.display     = 'none';
   }
 }
 
-$('btn-signin-show').addEventListener('click', () => {
-  $('auth-signed-out').style.display = 'none';
-  $('auth-form').style.display = '';
-  $('auth-email-input').focus();
-});
+function openAuthModal(panel) {
+  showAuthPanel(panel || 'signin');
+  $('auth-modal').classList.add('show');
+}
 
-$('btn-signin-cancel').addEventListener('click', () => {
-  $('auth-form').style.display = 'none';
-  $('auth-signed-out').style.display = '';
-});
+function closeAuthModal() {
+  $('auth-modal').classList.remove('show');
+}
 
-$('btn-signin-submit').addEventListener('click', async () => {
-  const email = $('auth-email-input').value.trim();
-  if (!email) return;
-  const btn = $('btn-signin-submit');
-  btn.disabled = true;
-  btn.textContent = '...';
-  const error = await SupabaseAPI.signIn(email);
-  btn.disabled = false;
-  btn.textContent = 'Send link';
-  $('auth-form').style.display = 'none';
-  const msg = $('auth-msg');
-  msg.style.display = '';
+function showAuthPanel(name) {
+  ['signin', 'signup', 'reset'].forEach(p => {
+    $(`panel-${p}`).style.display = p === name ? '' : 'none';
+    const tab = $(`tab-${p}`);
+    if (tab) tab.classList.toggle('selected', p === name);
+  });
+  ['si-error', 'su-error', 'reset-msg'].forEach(id => {
+    const el = $(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+function setAuthBtnLoading(id, loading, label) {
+  const btn = $(id);
+  btn.disabled    = loading;
+  btn.textContent = loading ? '…' : label;
+}
+
+$('btn-signin-show').addEventListener('click', () => openAuthModal('signin'));
+$('btn-auth-close').addEventListener('click', closeAuthModal);
+$('auth-modal').addEventListener('click', e => { if (e.target === $('auth-modal')) closeAuthModal(); });
+$('tab-signin').addEventListener('click', () => showAuthPanel('signin'));
+$('tab-signup').addEventListener('click', () => showAuthPanel('signup'));
+$('btn-show-reset').addEventListener('click', () => showAuthPanel('reset'));
+$('btn-reset-back').addEventListener('click', () => showAuthPanel('signin'));
+
+$('btn-do-signin').addEventListener('click', async () => {
+  const email    = $('si-email').value.trim();
+  const password = $('si-password').value;
+  if (!email || !password) return;
+  setAuthBtnLoading('btn-do-signin', true, 'Sign In');
+  const { error } = await SupabaseAPI.signInWithPassword(email, password);
+  setAuthBtnLoading('btn-do-signin', false, 'Sign In');
   if (error) {
-    msg.textContent = 'Error — try again';
-    msg.style.color = '#f87171';
-    setTimeout(() => { msg.style.display = 'none'; $('auth-signed-out').style.display = ''; }, 3000);
-  } else {
-    msg.textContent = 'Check your email';
-    msg.style.color = '#4ade80';
+    const el = $('si-error');
+    el.textContent   = error.message.includes('Invalid') ? 'Incorrect email or password.' : error.message;
+    el.style.display = '';
   }
+});
+
+$('btn-do-signup').addEventListener('click', async () => {
+  const email    = $('su-email').value.trim();
+  const password = $('su-password').value;
+  const confirm  = $('su-confirm').value;
+  const el       = $('su-error');
+  if (!email || !password) return;
+  if (password !== confirm) {
+    el.textContent = 'Passwords do not match.';
+    el.style.display = '';
+    return;
+  }
+  if (password.length < 6) {
+    el.textContent = 'Password must be at least 6 characters.';
+    el.style.display = '';
+    return;
+  }
+  setAuthBtnLoading('btn-do-signup', true, 'Create Account');
+  const { error } = await SupabaseAPI.signUp(email, password);
+  setAuthBtnLoading('btn-do-signup', false, 'Create Account');
+  if (error) {
+    el.textContent   = error.message;
+    el.style.display = '';
+  } else {
+    el.style.color   = '#4ade80';
+    el.textContent   = 'Account created! Check your email to confirm, then sign in.';
+    el.style.display = '';
+  }
+});
+
+$('btn-do-reset').addEventListener('click', async () => {
+  const email = $('reset-email').value.trim();
+  if (!email) return;
+  setAuthBtnLoading('btn-do-reset', true, 'Send Reset Email');
+  const error = await SupabaseAPI.resetPassword(email);
+  setAuthBtnLoading('btn-do-reset', false, 'Send Reset Email');
+  const msg = $('reset-msg');
+  msg.style.color   = error ? '#f87171' : '#4ade80';
+  msg.textContent   = error ? 'Error — try again.' : 'Reset email sent — check your inbox.';
+  msg.style.display = '';
 });
 
 $('btn-signout').addEventListener('click', async () => {
@@ -651,10 +703,9 @@ $('btn-signout').addEventListener('click', async () => {
   setAuthState(null);
 });
 
-SupabaseAPI.onAuthStateChange(user => {
-  setAuthState(user);
-  $('btn-history').style.display = user ? '' : 'none';
-});
+SupabaseAPI.onAuthStateChange(user => setAuthState(user));
+
+SupabaseAPI.getUser().then(user => { if (user) setAuthState(user); });
 
 /* ── History ─────────────────────────────────── */
 function fmtDate(iso) {

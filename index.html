@@ -19,14 +19,8 @@
   <!-- Auth bar (top-right corner) -->
   <div id="auth-bar">
     <div id="auth-signed-out">
-      <button class="auth-btn auth-btn-ghost" id="btn-signin-show">Sign in</button>
+      <button class="auth-btn auth-btn-ghost" id="btn-signin-show">Sign In</button>
     </div>
-    <div id="auth-form" style="display:none">
-      <input type="email" id="auth-email-input" placeholder="your@email.com" />
-      <button class="auth-btn auth-btn-primary" id="btn-signin-submit">Send link</button>
-      <button class="auth-btn auth-btn-ghost" id="btn-signin-cancel">Cancel</button>
-    </div>
-    <span id="auth-msg" style="display:none"></span>
     <div id="auth-signed-in" style="display:none">
       <span id="auth-user-email"></span>
       <button class="auth-btn auth-btn-ghost" id="btn-signout">Sign out</button>
@@ -182,6 +176,45 @@
   </div>
 
   <button id="btn-new-game">New Game</button>
+</div>
+
+<!-- ═══════════════ AUTH MODAL ═════════════ -->
+<div id="auth-modal">
+  <div id="auth-modal-box">
+    <button id="btn-auth-close">✕</button>
+
+    <div id="auth-tabs">
+      <button class="auth-tab selected" id="tab-signin">Sign In</button>
+      <button class="auth-tab" id="tab-signup">Sign Up</button>
+    </div>
+
+    <!-- Sign in -->
+    <div id="panel-signin">
+      <input type="email" id="si-email" placeholder="Email" autocomplete="email" />
+      <input type="password" id="si-password" placeholder="Password" autocomplete="current-password" />
+      <p class="auth-error" id="si-error" style="display:none"></p>
+      <button class="auth-submit-btn" id="btn-do-signin">Sign In</button>
+      <button class="auth-link-btn" id="btn-show-reset">Forgot password?</button>
+    </div>
+
+    <!-- Sign up -->
+    <div id="panel-signup" style="display:none">
+      <input type="email" id="su-email" placeholder="Email" autocomplete="email" />
+      <input type="password" id="su-password" placeholder="Password" autocomplete="new-password" />
+      <input type="password" id="su-confirm" placeholder="Confirm password" autocomplete="new-password" />
+      <p class="auth-error" id="su-error" style="display:none"></p>
+      <button class="auth-submit-btn" id="btn-do-signup">Create Account</button>
+    </div>
+
+    <!-- Reset password -->
+    <div id="panel-reset" style="display:none">
+      <p class="auth-reset-info">Enter your email and we'll send a password reset link.</p>
+      <input type="email" id="reset-email" placeholder="Email" autocomplete="email" />
+      <p id="reset-msg" style="display:none"></p>
+      <button class="auth-submit-btn" id="btn-do-reset">Send Reset Email</button>
+      <button class="auth-link-btn" id="btn-reset-back">Back to Sign In</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
