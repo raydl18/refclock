@@ -493,3 +493,66 @@ btnPlay.addEventListener('click', async () => {
       wakeLock = await navigator.wakeLock.request('screen');
   } catch(_) {}
 });
+
+/* ── Auth UI ─────────────────────────────── */
+let currentUser = null;
+
+function setAuthState(user) {
+  currentUser = user;
+  const signedOut = $('auth-signed-out');
+  const form      = $('auth-form');
+  const signedIn  = $('auth-signed-in');
+  const msg       = $('auth-msg');
+  if (user) {
+    signedOut.style.display = 'none';
+    form.style.display      = 'none';
+    msg.style.display       = 'none';
+    signedIn.style.display  = '';
+    $('auth-user-email').textContent = user.email;
+  } else {
+    signedOut.style.display = '';
+    form.style.display      = 'none';
+    msg.style.display       = 'none';
+    signedIn.style.display  = 'none';
+  }
+}
+
+$('btn-signin-show').addEventListener('click', () => {
+  $('auth-signed-out').style.display = 'none';
+  $('auth-form').style.display = '';
+  $('auth-email-input').focus();
+});
+
+$('btn-signin-cancel').addEventListener('click', () => {
+  $('auth-form').style.display = 'none';
+  $('auth-signed-out').style.display = '';
+});
+
+$('btn-signin-submit').addEventListener('click', async () => {
+  const email = $('auth-email-input').value.trim();
+  if (!email) return;
+  const btn = $('btn-signin-submit');
+  btn.disabled = true;
+  btn.textContent = '...';
+  const error = await SupabaseAPI.signIn(email);
+  btn.disabled = false;
+  btn.textContent = 'Send link';
+  $('auth-form').style.display = 'none';
+  const msg = $('auth-msg');
+  msg.style.display = '';
+  if (error) {
+    msg.textContent = 'Error — try again';
+    msg.style.color = '#f87171';
+    setTimeout(() => { msg.style.display = 'none'; $('auth-signed-out').style.display = ''; }, 3000);
+  } else {
+    msg.textContent = 'Check your email';
+    msg.style.color = '#4ade80';
+  }
+});
+
+$('btn-signout').addEventListener('click', async () => {
+  await SupabaseAPI.signOut();
+  setAuthState(null);
+});
+
+SupabaseAPI.onAuthStateChange(setAuthState);

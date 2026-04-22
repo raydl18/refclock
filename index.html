@@ -15,6 +15,24 @@
 
 <!-- ═══════════════ SETUP SCREEN ═══════════════ -->
 <div id="setup-screen">
+
+  <!-- Auth bar (top-right corner) -->
+  <div id="auth-bar">
+    <div id="auth-signed-out">
+      <button class="auth-btn auth-btn-ghost" id="btn-signin-show">Sign in</button>
+    </div>
+    <div id="auth-form" style="display:none">
+      <input type="email" id="auth-email-input" placeholder="your@email.com" />
+      <button class="auth-btn auth-btn-primary" id="btn-signin-submit">Send link</button>
+      <button class="auth-btn auth-btn-ghost" id="btn-signin-cancel">Cancel</button>
+    </div>
+    <span id="auth-msg" style="display:none"></span>
+    <div id="auth-signed-in" style="display:none">
+      <span id="auth-user-email"></span>
+      <button class="auth-btn auth-btn-ghost" id="btn-signout">Sign out</button>
+    </div>
+  </div>
+
   <h1>RefClock</h1>
 
   <div class="setup-row">
