@@ -97,6 +97,11 @@
       <button class="ctrl-btn" id="btn-pause" disabled>⏸</button>
     </div>
     <button id="btn-end-game">End Game</button>
+    <!-- Collapsible notes -->
+    <details id="notes-details">
+      <summary id="notes-summary">Notes</summary>
+      <textarea id="notes-ingame" placeholder="Match notes…" rows="4"></textarea>
+    </details>
   </div>
 
   <!-- RIGHT TEAM -->
@@ -154,6 +159,11 @@
   <div class="stats-section">
     <h3>Match Events</h3>
     <div class="stats-row" id="stats-row"></div>
+  </div>
+
+  <div class="notes-endgame-section">
+    <label class="notes-label">Notes</label>
+    <textarea id="notes-endgame" placeholder="Match notes…" rows="3"></textarea>
   </div>
 
   <button id="btn-new-game">New Game</button>

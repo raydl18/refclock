@@ -88,6 +88,7 @@ $('btn-start-game').addEventListener('click', async () => {
   btnPause.disabled = true;
 
   clearSavedState();
+  $('notes-ingame').value = loadNotes();
   setupScreen.style.display = 'none';
   gameScreen.classList.add('active');
 
@@ -221,6 +222,7 @@ function restoreSavedGame() {
     const halfPt = state.totalSeconds / 2;
     periodEl.textContent = state.elapsedSeconds <= halfPt ? '1st Half' : '2nd Half';
 
+    $('notes-ingame').value = loadNotes();
     setupScreen.style.display = 'none';
     gameScreen.classList.add('active');
 
@@ -468,12 +470,14 @@ function showEndGame() {
     </div>
   `;
 
+  $('notes-endgame').value = loadNotes();
   endgameOverlay.classList.add('show');
 }
 
 btnNewGame.addEventListener('click', () => {
   endgameOverlay.classList.remove('show');
   gameScreen.classList.remove('active');
+  saveNotes('');
   setupScreen.style.display = '';
 });
 
@@ -556,3 +560,20 @@ $('btn-signout').addEventListener('click', async () => {
 });
 
 SupabaseAPI.onAuthStateChange(setAuthState);
+
+/* ── Notes ───────────────────────────────────── */
+function loadNotes() {
+  return localStorage.getItem('refclock_notes') || '';
+}
+
+function saveNotes(text) {
+  localStorage.setItem('refclock_notes', text);
+}
+
+$('notes-ingame').addEventListener('input', () => {
+  saveNotes($('notes-ingame').value);
+});
+
+$('notes-endgame').addEventListener('input', () => {
+  saveNotes($('notes-endgame').value);
+});

@@ -643,3 +643,68 @@ body {
   margin-bottom: 16px;
 }
 #btn-new-game:active { opacity: 0.85; }
+
+/* ─── NOTES ────────────────────────────────────── */
+#notes-details {
+  width: 100%;
+  margin-top: 4px;
+}
+
+#notes-summary {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #666;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  padding: 4px 0;
+  list-style: none;
+}
+#notes-summary::-webkit-details-marker { display: none; }
+#notes-details[open] #notes-summary { color: #4ade80; }
+
+#notes-ingame {
+  width: 100%;
+  margin-top: 6px;
+  background: #0d1117;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  color: #ccc;
+  font-size: 0.75rem;
+  padding: 8px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
+#notes-ingame:focus { border-color: #4ade80; }
+
+.notes-endgame-section {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.notes-label {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #888;
+}
+
+#notes-endgame {
+  width: 100%;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  color: #ccc;
+  font-size: 0.85rem;
+  padding: 10px 12px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
+#notes-endgame:focus { border-color: #4ade80; }
