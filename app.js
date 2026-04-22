@@ -586,7 +586,45 @@ $('btn-signout').addEventListener('click', async () => {
   setAuthState(null);
 });
 
-SupabaseAPI.onAuthStateChange(setAuthState);
+SupabaseAPI.onAuthStateChange(user => {
+  setAuthState(user);
+  $('btn-history').style.display = user ? '' : 'none';
+});
+
+/* ── History ─────────────────────────────────── */
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+async function openHistory() {
+  const list = $('history-list');
+  list.innerHTML = '<div class="history-loading">Loading…</div>';
+  $('history-overlay').classList.add('show');
+
+  const games = await SupabaseAPI.fetchGames();
+  if (!games.length) {
+    list.innerHTML = '<div class="history-empty">No saved games yet.</div>';
+    return;
+  }
+
+  list.innerHTML = games.map(g => `
+    <div class="history-item">
+      <div class="history-item-score">
+        <span>${g.home_team}</span>
+        <span>${g.home_score} – ${g.away_score}</span>
+        <span>${g.away_team}</span>
+      </div>
+      <div class="history-item-meta">${fmtDate(g.created_at)}</div>
+      ${g.notes ? `<div class="history-item-notes">${g.notes.replace(/</g,'&lt;')}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+$('btn-history').addEventListener('click', openHistory);
+$('btn-history-close').addEventListener('click', () => {
+  $('history-overlay').classList.remove('show');
+});
 
 /* ── Notes ───────────────────────────────────── */
 function loadNotes() {
