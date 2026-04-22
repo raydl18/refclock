@@ -472,7 +472,34 @@ function showEndGame() {
 
   $('notes-endgame').value = loadNotes();
   endgameOverlay.classList.add('show');
+
+  if (currentUser) {
+    const record = {
+      user_id:           currentUser.id,
+      home_team:         a.name,
+      away_team:         b.name,
+      home_score:        a.score,
+      away_score:        b.score,
+      duration_per_half: state.totalSeconds,
+      events:            state.events,
+      notes:             loadNotes(),
+    };
+    SupabaseAPI.saveGame(record).then(error => {
+      if (!error) showSavedBadge();
+    });
+  }
 }
+
+function showSavedBadge() {
+  let badge = $('saved-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'saved-badge';
+    endgameOverlay.appendChild(badge);
+  }
+  badge.textContent = 'Saved';
+  badge.classList.add('show');
+  setTimeout(() => badge.classList.remove('show'), 2500);
 
 btnNewGame.addEventListener('click', () => {
   endgameOverlay.classList.remove('show');

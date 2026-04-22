@@ -708,3 +708,27 @@ body {
   font-family: inherit;
 }
 #notes-endgame:focus { border-color: #4ade80; }
+
+/* ─── SAVED BADGE ──────────────────────────────── */
+#saved-badge {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: #4ade80;
+  color: #1a1a2e;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  border-radius: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 40;
+}
+#saved-badge.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
