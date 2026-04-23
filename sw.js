@@ -1,5 +1,5 @@
-const CACHE = 'refclock-v4';
-const ASSETS = ['/', '/index.html', '/style.css', '/app.js', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];
+const CACHE = 'refclock-v5';
+const ASSETS = ['/refclock', '/refclock/index.html', '/refclock/style.css', '/refclock/app.js', '/refclock/manifest.json', '/refclock/icons/icon-192.png', '/refclock/icons/icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
@@ -24,7 +24,7 @@ self.addEventListener('message', e => {
   if (e.data.type === 'SCHEDULE_NOTIF') {
     const { delay, title, body, tag } = e.data;
     notifIds.push(setTimeout(() =>
-      self.registration.showNotification(title, { body, icon: '/icons/icon-192.png', tag, silent: false }),
+      self.registration.showNotification(title, { body, icon: '/refclock/icons/icon-192.png', tag, silent: false }),
       delay
     ));
   } else if (e.data.type === 'CANCEL_NOTIFS') {
