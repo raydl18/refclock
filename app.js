@@ -575,7 +575,7 @@ btnNewGame.addEventListener('click', () => {
 
 /* ── Service worker ─────────────────────── */
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
+  navigator.serviceWorker.register('/refclock/sw.js').catch(() => {});
 }
 
 /* ── Restore on load ────────────────────── */
