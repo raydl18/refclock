@@ -1,27 +1,58 @@
 # RefClock
 
-A PWA(Progressive Web App - Available as a browser website or app) for soccer referees to track game time, score, and match events on the pitch.
+A soccer referee app for tracking game time, score, goals, and cards on the pitch.
 
-## Features
+---
 
-- **Per-half timer** — set duration per half, timer stops at zero each half rather than ending the game automatically
-- **Stoppage time** — +Time / -Time buttons with a configurable default (30s) to add or remove time mid-half
-- **Score & events** — log goals and cards (yellow/red) with optional player numbers; events display with the current cumulative game time (e.g. 47')
-- **Match notes** — notes field visible during the game and on the final screen, for weather, injuries, or anything needed for a match report
-- **Save & history** — manually save completed matches to the cloud; browse past games and tap into any match for a full event report
-- **Offline-first PWA** — works with no internet after the first load; available on the Android Play Store
-- **Background timer** — epoch-based clock stays accurate after the screen turns off or the app is backgrounded; notifications fire at half time and full time
-- **Supabase sync** (optional) — create an account with a display name to save game history to the cloud; game data is not saved automatically
+## How to Use the App
 
-## Use it
+### Getting the app
 
-**[raydl18.github.io/refclock](https://raydl18.github.io/refclock)**
+- **Browser:** Open [raydl18.github.io/refclock](https://raydl18.github.io/refclock) in any browser — no download needed.
+- **Android:** Search "RefClock" on the Google Play Store, or open the link above and tap "Add to Home Screen" to install it directly.
+- **iPhone/iPad:** Open the link in Safari and tap the share icon → "Add to Home Screen."
 
-Open in any browser. On Android, use "Add to Home Screen" to install it as an app.
-Once published to the Play Store, you can also find it by searching "RefClock" in the store.
+### Before the match
 
+1. Enter both team names and pick their colors using the color circles.
+2. Set the duration per half (default is 45 minutes).
+3. Tap **Kick Off** to start.
 
-## Project structure
+### During the match
+
+- Tap **▶** to start the timer, **⏸** to pause it.
+- Tap **Goal** or **Card** on a team's side to log an event — you can optionally enter the player number.
+- Use **+ Time** / **- Time** to add or remove stoppage time. The number next to those buttons is how many seconds each tap adds or removes (default 30s).
+- Write anything in the notes box at the bottom — weather, injuries, incidents.
+- You'll get a notification at half time and full time if notifications are enabled.
+
+### At half time
+
+- The timer stops automatically at zero. Tap **▶** to start the second half.
+
+### After the match
+
+- Tap **End Game** to see the final score and match events.
+- Edit your notes if needed, then tap **Save Game** to save the record to your account.
+- Tap **New Game** to reset and start a fresh match without saving.
+
+### Saving & history
+
+- You need a free account to save matches. Tap **Sign In** on the home screen to sign in or create one.
+- To view past matches, tap **History** on the home screen.
+- Tap any match in the history list to see the full event report.
+
+---
+
+## For Developers
+
+### Tech stack
+
+- Vanilla HTML, CSS, and JavaScript — no framework, no build step.
+- Service worker for offline support and background notifications.
+- Supabase for authentication and cloud storage.
+
+### Project structure
 
 ```
 index.html      — markup
@@ -34,6 +65,6 @@ manifest.json   — PWA manifest
 icons/          — app icons (192px and 512px)
 ```
 
-## Android (TWA)
+### Android (TWA)
 
-The app is configured as a Trusted Web Activity via `.well-known/assetlinks.json`, which removes the browser bar when installed from the Play Store.
+The app is published to the Play Store as a Trusted Web Activity. The `.well-known/assetlinks.json` file links the Android app to the domain, which removes the browser bar when running from the Play Store install.
