@@ -1,4 +1,4 @@
-const CACHE = 'refclock-v5';
+const CACHE = 'refclock-v6';
 const ASSETS = ['/refclock', '/refclock/index.html', '/refclock/style.css', '/refclock/app.js', '/refclock/manifest.json', '/refclock/icons/icon-192.png', '/refclock/icons/icon-512.png'];
 
 self.addEventListener('install', e => {
