@@ -7,7 +7,7 @@
 body {
   background: #111;
   color: #fff;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'DM Mono', 'Segoe UI', system-ui, sans-serif;
   height: 100dvh;
   overflow: hidden;
 }
@@ -23,6 +23,29 @@ body {
   height: 100dvh;
   padding: 24px;
   background: #1a1a2e;
+  overflow: hidden;
+}
+
+#setup-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 48px,
+      rgba(255,255,255,0.025) 48px,
+      rgba(255,255,255,0.025) 49px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 48px,
+      rgba(255,255,255,0.015) 48px,
+      rgba(255,255,255,0.015) 49px
+    );
+  pointer-events: none;
 }
 
 /* ─── AUTH BAR ─────────────────────────────────── */
@@ -51,7 +74,8 @@ body {
 
 #auth-modal-box {
   background: #1e293b;
-  border-radius: 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.07);
   padding: 28px 24px 24px;
   width: 100%;
   max-width: 340px;
@@ -59,7 +83,7 @@ body {
   flex-direction: column;
   gap: 14px;
   position: relative;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7);
 }
 
 #btn-auth-close {
@@ -185,10 +209,12 @@ body {
 }
 
 #setup-screen h1 {
-  font-size: 2.4rem;
-  font-weight: 900;
-  letter-spacing: 5px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 4rem;
+  font-weight: 400;
+  letter-spacing: 10px;
   color: #4ade80;
+  text-shadow: 0 0 30px rgba(74,222,128,0.25);
 }
 
 .setup-row {
@@ -285,16 +311,29 @@ body {
   max-width: 360px;
   padding: 18px;
   border: none;
-  border-radius: 14px;
+  border-radius: 6px;
   background: #4ade80;
   color: #1a1a2e;
-  font-size: 1.1rem;
-  font-weight: 900;
-  letter-spacing: 3px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: 6px;
   text-transform: uppercase;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
+  position: relative;
+  overflow: hidden;
 }
+#btn-start-game::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+#btn-start-game:hover::after { left: 160%; }
 #btn-start-game:active { transform: scale(0.97); background: #22c55e; }
 
 /* ─── GAME SCREEN ──────────────────────────────── */
@@ -334,9 +373,11 @@ body {
 }
 
 .team-panel .score {
-  font-size: 3rem;
-  font-weight: 900;
+  font-family: 'DM Mono', monospace;
+  font-size: 3.2rem;
+  font-weight: 500;
   line-height: 1;
+  letter-spacing: -1px;
 }
 
 /* Event log on each side */
@@ -378,14 +419,14 @@ body {
 .action-btn {
   width: 100%;
   padding: 10px 4px;
-  border: none;
-  border-radius: 10px;
-  font-size: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
   cursor: pointer;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0,0,0,0.35);
   color: inherit;
   transition: background 0.1s, transform 0.1s;
   display: flex;
@@ -412,25 +453,29 @@ body {
 }
 
 #center-panel .app-title {
-  font-size: 0.55rem;
-  font-weight: 900;
-  letter-spacing: 3px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 4px;
   color: #4ade80;
+  opacity: 0.7;
   text-transform: uppercase;
 }
 
 #clock {
+  font-family: 'DM Mono', monospace;
   font-size: 1.7rem;
-  font-weight: 900;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   color: #4ade80;
-  transition: color 0.3s;
+  transition: color 0.3s, text-shadow 0.3s;
   text-align: center;
+  text-shadow: 0 0 16px rgba(74,222,128,0.5);
 }
 
-#clock.warning { color: #facc15; }
-#clock.danger  { color: #f87171; animation: pulse 0.8s infinite; }
+#clock.warning { color: #facc15; text-shadow: 0 0 16px rgba(250,204,21,0.5); }
+#clock.danger  { color: #f87171; text-shadow: 0 0 16px rgba(248,113,113,0.5); animation: pulse 0.8s infinite; }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
@@ -475,8 +520,8 @@ body {
 .ctrl-btn:active { transform: scale(0.9); }
 .ctrl-btn:disabled { opacity: 0.3; pointer-events: none; }
 
-#btn-play { background: #16a34a; color: #fff; }
-#btn-pause { background: #dc2626; color: #fff; }
+#btn-play  { background: #16a34a; color: #fff; box-shadow: 0 0 14px rgba(22,163,74,0.45); }
+#btn-pause { background: #dc2626; color: #fff; box-shadow: 0 0 14px rgba(220,38,38,0.45); }
 
 .stoppage-controls {
   display: flex;
@@ -548,20 +593,22 @@ body {
 
 #modal {
   background: #1e293b;
-  border-radius: 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.07);
   padding: 24px;
   width: 100%;
   max-width: 340px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7);
 }
 
 #modal h2 {
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: 2px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: 5px;
   text-transform: uppercase;
   text-align: center;
 }
@@ -647,7 +694,7 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.92);
+  background: #08080f;
   z-index: 30;
   flex-direction: column;
   overflow-y: auto;
@@ -658,12 +705,14 @@ body {
 #endgame-overlay.show { display: flex; }
 
 #endgame-overlay h2 {
-  font-size: 1rem;
-  font-weight: 900;
-  letter-spacing: 4px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  letter-spacing: 10px;
   text-transform: uppercase;
   color: #f87171;
   text-align: center;
+  text-shadow: 0 0 24px rgba(248,113,113,0.3);
   margin-top: 8px;
 }
 
@@ -696,9 +745,11 @@ body {
 }
 
 .final-team .final-score {
+  font-family: 'DM Mono', monospace;
   font-size: 3.5rem;
-  font-weight: 900;
+  font-weight: 500;
   line-height: 1;
+  letter-spacing: -1px;
 }
 
 .final-vs {
@@ -752,9 +803,10 @@ body {
 
 .stats-event-item {
   font-size: 0.75rem;
-  background: rgba(255,255,255,0.05);
-  border-radius: 8px;
-  padding: 6px 8px;
+  background: transparent;
+  border-left: 2px solid rgba(255,255,255,0.12);
+  border-radius: 0;
+  padding: 5px 8px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -771,12 +823,13 @@ body {
   max-width: 380px;
   padding: 18px;
   border: none;
-  border-radius: 14px;
+  border-radius: 6px;
   background: #4ade80;
   color: #1a1a2e;
-  font-size: 1rem;
-  font-weight: 900;
-  letter-spacing: 3px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  letter-spacing: 5px;
   text-transform: uppercase;
   cursor: pointer;
   margin-top: 8px;
@@ -787,14 +840,15 @@ body {
 #btn-new-game {
   width: 100%;
   max-width: 380px;
-  padding: 18px;
+  padding: 16px;
   border: 1px solid #334155;
-  border-radius: 14px;
+  border-radius: 6px;
   background: transparent;
-  color: #888;
-  font-size: 1rem;
-  font-weight: 900;
-  letter-spacing: 3px;
+  color: #555;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 4px;
   text-transform: uppercase;
   cursor: pointer;
   margin-top: 8px;
@@ -882,12 +936,13 @@ body {
   max-width: 360px;
   padding: 12px;
   border: 1px solid #334155;
-  border-radius: 14px;
+  border-radius: 6px;
   background: transparent;
-  color: #888;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 2px;
+  color: #555;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 4px;
   text-transform: uppercase;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
@@ -915,9 +970,10 @@ body {
 }
 
 #history-title {
-  font-size: 0.8rem;
-  font-weight: 900;
-  letter-spacing: 3px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: 6px;
   text-transform: uppercase;
   color: #4ade80;
 }
@@ -943,20 +999,23 @@ body {
 }
 
 .history-item {
-  background: #16213e;
-  border-radius: 12px;
-  padding: 14px 16px;
+  background: transparent;
+  border-left: 3px solid rgba(74,222,128,0.3);
+  border-radius: 0;
+  padding: 12px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  transition: border-color 0.15s;
 }
 
 .history-item-score {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-family: 'DM Mono', monospace;
   font-size: 1rem;
-  font-weight: 900;
+  font-weight: 500;
 }
 
 .history-item-teams {
@@ -997,7 +1056,7 @@ body {
 }
 
 .history-item { cursor: pointer; }
-.history-item:hover { background: #1e2d4a; }
+.history-item:hover { border-color: #4ade80; background: rgba(74,222,128,0.04); }
 
 /* ─── GAME DETAIL OVERLAY ──────────────────────── */
 #game-detail-overlay {
