@@ -766,7 +766,7 @@ body {
 
 .no-events { font-size: 0.75rem; color: #555; text-align: center; padding: 8px; }
 
-#btn-new-game {
+#btn-save-game {
   width: 100%;
   max-width: 380px;
   padding: 18px;
@@ -774,6 +774,24 @@ body {
   border-radius: 14px;
   background: #4ade80;
   color: #1a1a2e;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 8px;
+}
+#btn-save-game:active { opacity: 0.85; }
+#btn-save-game:disabled { opacity: 0.5; cursor: default; }
+
+#btn-new-game {
+  width: 100%;
+  max-width: 380px;
+  padding: 18px;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  background: transparent;
+  color: #888;
   font-size: 1rem;
   font-weight: 900;
   letter-spacing: 3px;
@@ -991,4 +1009,46 @@ body {
   letter-spacing: 2px;
   text-transform: uppercase;
   margin-top: 40px;
+}
+
+.history-item { cursor: pointer; }
+.history-item:hover { background: #1e2d4a; }
+
+/* ─── GAME DETAIL OVERLAY ──────────────────────── */
+#game-detail-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #0f0f1a;
+  z-index: 50;
+  flex-direction: column;
+  overflow-y: auto;
+}
+#game-detail-overlay.show { display: flex; }
+
+#game-detail-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1e293b;
+  flex-shrink: 0;
+}
+
+#btn-game-detail-back {
+  background: none;
+  border: none;
+  color: #4ade80;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+#game-detail-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
 }

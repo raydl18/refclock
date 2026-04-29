@@ -501,57 +501,20 @@ function showEndGame() {
     `).join('');
   }
 
-  const goals   = t => state.events.filter(e => e.team === t && e.type === 'goal').length;
-  const yellows = t => state.events.filter(e => e.team === t && e.cardType === 'yellow').length;
-  const reds    = t => state.events.filter(e => e.team === t && e.cardType === 'red').length;
-
   $('stats-row').innerHTML = `
     <div class="stats-team-col">
       <div class="col-header" style="color:${a.color}">${a.name}</div>
       ${renderStatEvents(evA)}
-      <div class="stats-event-item" style="margin-top:4px;opacity:0.6">
-        <span class="s-icon">⚽</span><span class="s-detail">Goals</span><span class="s-time">${goals(0)}</span>
-      </div>
-      <div class="stats-event-item" style="opacity:0.6">
-        <span class="s-icon">🟨</span><span class="s-detail">Yellows</span><span class="s-time">${yellows(0)}</span>
-      </div>
-      <div class="stats-event-item" style="opacity:0.6">
-        <span class="s-icon">🟥</span><span class="s-detail">Reds</span><span class="s-time">${reds(0)}</span>
-      </div>
     </div>
     <div class="stats-team-col">
       <div class="col-header" style="color:${b.color}">${b.name}</div>
       ${renderStatEvents(evB)}
-      <div class="stats-event-item" style="margin-top:4px;opacity:0.6">
-        <span class="s-icon">⚽</span><span class="s-detail">Goals</span><span class="s-time">${goals(1)}</span>
-      </div>
-      <div class="stats-event-item" style="opacity:0.6">
-        <span class="s-icon">🟨</span><span class="s-detail">Yellows</span><span class="s-time">${yellows(1)}</span>
-      </div>
-      <div class="stats-event-item" style="opacity:0.6">
-        <span class="s-icon">🟥</span><span class="s-detail">Reds</span><span class="s-time">${reds(1)}</span>
-      </div>
     </div>
   `;
 
   $('notes-endgame').value = loadNotes();
+  $('btn-save-game').style.display = currentUser ? '' : 'none';
   endgameOverlay.classList.add('show');
-
-  if (currentUser) {
-    const record = {
-      user_id:           currentUser.id,
-      home_team:         a.name,
-      away_team:         b.name,
-      home_score:        a.score,
-      away_score:        b.score,
-      duration_per_half: state.totalSeconds,
-      events:            state.events,
-      notes:             loadNotes(),
-    };
-    SupabaseAPI.saveGame(record).then(error => {
-      if (!error) showSavedBadge();
-    });
-  }
 }
 
 function showSavedBadge() {
@@ -566,10 +529,39 @@ function showSavedBadge() {
   setTimeout(() => badge.classList.remove('show'), 2500);
 }
 
+$('btn-save-game').addEventListener('click', async () => {
+  if (!currentUser) return;
+  const btn = $('btn-save-game');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  const [a, b] = state.teams;
+  const record = {
+    user_id:           currentUser.id,
+    home_team:         a.name,
+    away_team:         b.name,
+    home_score:        a.score,
+    away_score:        b.score,
+    duration_per_half: state.totalSeconds,
+    events:            state.events,
+    notes:             $('notes-endgame').value,
+  };
+  const error = await SupabaseAPI.saveGame(record);
+  if (error) {
+    btn.disabled = false;
+    btn.textContent = 'Save Game';
+  } else {
+    btn.textContent = 'Saved ✓';
+    showSavedBadge();
+  }
+});
+
 btnNewGame.addEventListener('click', () => {
   endgameOverlay.classList.remove('show');
   gameScreen.classList.remove('active');
   saveNotes('');
+  const saveBtn = $('btn-save-game');
+  saveBtn.disabled = false;
+  saveBtn.textContent = 'Save Game';
   setupScreen.style.display = '';
 });
 
@@ -724,8 +716,8 @@ async function openHistory() {
     return;
   }
 
-  list.innerHTML = games.map(g => `
-    <div class="history-item">
+  list.innerHTML = games.map((g, i) => `
+    <div class="history-item" data-index="${i}">
       <div class="history-item-score">
         <span>${g.home_team}</span>
         <span>${g.home_score} – ${g.away_score}</span>
@@ -735,11 +727,57 @@ async function openHistory() {
       ${g.notes ? `<div class="history-item-notes">${g.notes.replace(/</g,'&lt;')}</div>` : ''}
     </div>
   `).join('');
+
+  list.querySelectorAll('.history-item').forEach(el => {
+    el.addEventListener('click', () => openGameDetail(games[+el.dataset.index]));
+  });
+}
+
+function openGameDetail(g) {
+  const events = Array.isArray(g.events) ? g.events : [];
+  const homeEvts = events.filter(e => e.team === 0);
+  const awayEvts = events.filter(e => e.team === 1);
+
+  function renderDetailEvents(evts) {
+    if (!evts.length) return `<div class="no-events">—</div>`;
+    return evts.map(ev => `
+      <div class="stats-event-item">
+        <span class="s-icon">${eventIcon(ev)}</span>
+        <span class="s-detail">${eventLabel(ev)}</span>
+        <span class="s-time">${ev.timestamp}</span>
+      </div>
+    `).join('');
+  }
+
+  $('game-detail-content').innerHTML = `
+    <div class="final-scoreboard" style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px">
+      <div style="font-weight:900;font-size:1.1rem">${g.home_team}</div>
+      <div style="font-size:1.8rem;font-weight:900">${g.home_score} – ${g.away_score}</div>
+      <div style="font-weight:900;font-size:1.1rem">${g.away_team}</div>
+    </div>
+    <div style="font-size:0.65rem;color:#555;letter-spacing:1px;text-align:center;margin-bottom:16px">${fmtDate(g.created_at)}</div>
+    <div class="stats-row">
+      <div class="stats-team-col">
+        <div class="col-header">${g.home_team}</div>
+        ${renderDetailEvents(homeEvts)}
+      </div>
+      <div class="stats-team-col">
+        <div class="col-header">${g.away_team}</div>
+        ${renderDetailEvents(awayEvts)}
+      </div>
+    </div>
+    ${g.notes ? `<div style="margin-top:16px;font-size:0.8rem;color:#888;font-style:italic;padding:10px;background:#16213e;border-radius:8px">${g.notes.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>` : ''}
+  `;
+
+  $('game-detail-overlay').classList.add('show');
 }
 
 $('btn-history').addEventListener('click', openHistory);
 $('btn-history-close').addEventListener('click', () => {
   $('history-overlay').classList.remove('show');
+});
+$('btn-game-detail-back').addEventListener('click', () => {
+  $('game-detail-overlay').classList.remove('show');
 });
 
 /* ── Notes ───────────────────────────────────── */
