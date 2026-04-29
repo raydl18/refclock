@@ -18,13 +18,13 @@
 <!-- ═══════════════ SETUP SCREEN ═══════════════ -->
 <div id="setup-screen">
 
-  <!-- Auth bar (top-right corner) -->
+  <!-- Auth bar -->
   <div id="auth-bar">
     <div id="auth-signed-out">
       <button class="auth-btn auth-btn-ghost" id="btn-signin-show">Sign In</button>
     </div>
     <div id="auth-signed-in" style="display:none">
-      <span id="auth-user-email"></span>
+      <span id="auth-greeting"></span>
       <button class="auth-btn auth-btn-ghost" id="btn-signout">Sign out</button>
     </div>
   </div>
@@ -207,6 +207,7 @@
 
     <!-- Sign up -->
     <div id="panel-signup" style="display:none">
+      <input type="text" id="su-name" placeholder="Display name" autocomplete="nickname" maxlength="32" />
       <input type="email" id="su-email" placeholder="Email" autocomplete="email" />
       <input type="password" id="su-password" placeholder="Password" autocomplete="new-password" />
       <input type="password" id="su-confirm" placeholder="Confirm password" autocomplete="new-password" />

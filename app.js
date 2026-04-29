@@ -590,7 +590,8 @@ function setAuthState(user) {
   if (user) {
     $('auth-signed-out').style.display = 'none';
     $('auth-signed-in').style.display  = '';
-    $('auth-user-email').textContent   = user.email;
+    const name = user.user_metadata?.display_name;
+    $('auth-greeting').textContent = name ? `Hey, ${name}` : user.email;
     $('btn-history').style.display     = '';
     closeAuthModal();
   } else {
@@ -650,10 +651,16 @@ $('btn-do-signin').addEventListener('click', async () => {
 });
 
 $('btn-do-signup').addEventListener('click', async () => {
+  const name     = $('su-name').value.trim();
   const email    = $('su-email').value.trim();
   const password = $('su-password').value;
   const confirm  = $('su-confirm').value;
   const el       = $('su-error');
+  if (!name) {
+    el.textContent = 'Please enter a display name.';
+    el.style.display = '';
+    return;
+  }
   if (!email || !password) return;
   if (password !== confirm) {
     el.textContent = 'Passwords do not match.';
@@ -666,7 +673,7 @@ $('btn-do-signup').addEventListener('click', async () => {
     return;
   }
   setAuthBtnLoading('btn-do-signup', true, 'Create Account');
-  const { error } = await SupabaseAPI.signUp(email, password);
+  const { error } = await SupabaseAPI.signUp(email, password, name);
   setAuthBtnLoading('btn-do-signup', false, 'Create Account');
   if (error) {
     el.textContent   = error.message;

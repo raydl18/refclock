@@ -203,6 +203,16 @@ body {
   white-space: nowrap;
 }
 
+#auth-greeting {
+  font-size: 0.75rem;
+  color: #4ade80;
+  font-weight: 600;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 #auth-msg {
   font-size: 0.7rem;
   color: #4ade80;
