@@ -567,7 +567,7 @@ btnNewGame.addEventListener('click', () => {
 
 /* ── Service worker ─────────────────────── */
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/refclock/sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js').catch(err => console.error('SW registration failed:', err));
 }
 
 /* ── Restore on load ────────────────────── */
