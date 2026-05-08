@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RefClock – Delete Account & Data</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f9fafb;
+      color: #1f2937;
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: #1a1a2e;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #4ade80;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #111;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 32px;
+    }
+
+    h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 28px 0 8px;
+      color: #111;
+    }
+
+    p {
+      font-size: 0.95rem;
+      color: #374151;
+      margin-bottom: 12px;
+    }
+
+    ol, ul {
+      margin: 8px 0 12px 22px;
+      font-size: 0.95rem;
+      color: #374151;
+    }
+
+    ol li, ul li { margin-bottom: 6px; }
+
+    .highlight {
+      background: #f0fdf4;
+      border-left: 4px solid #4ade80;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin: 20px 0;
+      font-size: 0.95rem;
+      color: #166534;
+      font-weight: 600;
+    }
+
+    a { color: #16a34a; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e5e7eb;
+      margin: 32px 0;
+    }
+
+    form {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 12px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #111;
+    }
+
+    input[type="email"],
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: #111;
+      background: #fff;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #4ade80;
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+    }
+
+    textarea { resize: vertical; min-height: 90px; }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: #374151;
+      margin-bottom: 16px;
+    }
+
+    .checkbox-row input { margin-top: 4px; }
+
+    button[type="submit"] {
+      background: #16a34a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button[type="submit"]:hover { background: #15803d; }
+    button[type="submit"]:disabled { background: #9ca3af; cursor: not-allowed; }
+
+    .footer {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 16px;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f3f4f6;
+      font-weight: 700;
+      color: #111;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="logo">
+      <div class="logo-icon">⚽</div>
+      <div class="logo-text">RefClock</div>
+    </div>
+
+    <h1>Delete Your RefClock Account &amp; Data</h1>
+    <div class="subtitle">App: <strong>RefClock</strong> · Developer: <strong>Raymond Liu</strong> · Last updated: May 7, 2026</div>
+
+    <div class="highlight">
+      You can request permanent deletion of your RefClock account and all associated data at any time using the form below.
+    </div>
+
+    <h2>How to request deletion</h2>
+    <ol>
+      <li>Fill out the form on this page with the email address tied to your RefClock account.</li>
+      <li>Press <strong>Submit Request</strong>. Your device's email app will open with a pre-filled message addressed to the developer.</li>
+      <li>Send the email. (If your device cannot open a mail client, copy the message and email it to <a href="mailto:rayrayliu2007@gmail.com">rayrayliu2007@gmail.com</a> manually.)</li>
+      <li>You will receive a confirmation reply within <strong>7 days</strong>, and your account and data will be deleted within <strong>30 days</strong> of that confirmation.</li>
+    </ol>
+
+    <h2>What gets deleted</h2>
+    <p>The following data is permanently deleted and cannot be recovered:</p>
+    <ul>
+      <li>Your account record (email, password hash, display name)</li>
+      <li>All saved game records (teams, scores, goals, cards, notes, timestamps)</li>
+      <li>Your authentication sessions</li>
+    </ul>
+
+    <h2>What is kept (and for how long)</h2>
+    <table>
+      <tr><th>Data</th><th>Retention</th><th>Reason</th></tr>
+      <tr>
+        <td>Email metadata of the deletion request itself</td>
+        <td>Up to 12 months</td>
+        <td>Audit trail in case of disputes or duplicate requests. Stored only in the developer's email inbox.</td>
+      </tr>
+      <tr>
+        <td>Anonymized, aggregated database backups</td>
+        <td>Up to 30 days</td>
+        <td>Supabase automated backups roll over on a 30-day window. After that window your data is fully purged from backups as well.</td>
+      </tr>
+      <tr>
+        <td>Local game state on your device</td>
+        <td>Until you clear it</td>
+        <td>Stored in your browser's localStorage on your own device — not on our servers. Clear your browser data or uninstall the app to remove it.</td>
+      </tr>
+    </table>
+
+    <h2>Request form</h2>
+    <p>Submitting this form composes an email to the developer from your device. No data is sent to any server from this page itself.</p>
+
+    <form id="delete-form">
+      <div class="form-row">
+        <label for="account-email">Account email <span style="color:#dc2626">*</span></label>
+        <input type="email" id="account-email" required placeholder="you@example.com" />
+      </div>
+
+      <div class="form-row">
+        <label for="display-name">Display name on the account (optional)</label>
+        <input type="text" id="display-name" placeholder="—" />
+      </div>
+
+      <div class="form-row">
+        <label for="scope">What should be deleted?</label>
+        <select id="scope">
+          <option value="all">My entire account and all saved games</option>
+          <option value="games">Only my saved games (keep the account)</option>
+          <option value="other">Other (explain below)</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label for="notes">Additional notes (optional)</label>
+        <textarea id="notes" placeholder="Anything else we should know"></textarea>
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="confirm" required />
+        <label for="confirm">I confirm I am the owner of this account and understand that deletion is permanent and cannot be undone.</label>
+      </div>
+
+      <button type="submit">Submit Request</button>
+    </form>
+
+    <hr />
+
+    <p>If you have questions, contact <a href="mailto:rayrayliu2007@gmail.com">rayrayliu2007@gmail.com</a>. See also our <a href="privacy.html">Privacy Policy</a>.</p>
+
+    <div class="footer">© 2026 RefClock. All rights reserved.</div>
+
+  </div>
+
+  <script>
+    document.getElementById('delete-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = document.getElementById('account-email').value.trim();
+      var name = document.getElementById('display-name').value.trim();
+      var scope = document.getElementById('scope').value;
+      var notes = document.getElementById('notes').value.trim();
+
+      var scopeText = scope === 'all'
+        ? 'Entire account + all saved games'
+        : scope === 'games'
+          ? 'Saved games only (keep the account)'
+          : 'Other (see notes)';
+
+      var body =
+        'RefClock Account Deletion Request\n' +
+        '---------------------------------\n\n' +
+        'Account email: ' + email + '\n' +
+        'Display name:  ' + (name || '(not provided)') + '\n' +
+        'Scope:         ' + scopeText + '\n\n' +
+        'Notes:\n' + (notes || '(none)') + '\n\n' +
+        'I confirm I am the owner of this account and authorize permanent deletion.\n';
+
+      var subject = 'RefClock account deletion request';
+      var mailto = 'mailto:rayrayliu2007@gmail.com'
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body=' + encodeURIComponent(body);
+
+      window.location.href = mailto;
+    });
+  </script>
+</body>
+</html>

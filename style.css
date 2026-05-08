@@ -959,6 +959,26 @@ body {
 }
 #btn-history:hover { border-color: #4ade80; color: #4ade80; }
 
+/* ─── SETUP FOOTER LINKS ───────────────────────── */
+#setup-footer-links {
+  margin-top: 28px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: #444;
+  letter-spacing: 1px;
+}
+#setup-footer-links a {
+  color: #777;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+#setup-footer-links a:hover { color: #4ade80; }
+#setup-footer-links span { color: #333; }
+
 /* ─── HISTORY OVERLAY ──────────────────────────── */
 #history-overlay {
   display: none;
