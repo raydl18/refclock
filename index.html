@@ -61,13 +61,9 @@
 
   <button id="btn-start-game">Kick Off</button>
   <button id="btn-history" style="display:none">History</button>
-
-  <div id="setup-footer-links">
-    <a href="privacy.html">Privacy</a>
-    <span>·</span>
-    <a href="delete-account.html">Delete account &amp; data</a>
-  </div>
 </div>
+
+<button id="btn-help" aria-label="Help and changelog">?</button>
 
 <!-- ═══════════════ HISTORY OVERLAY ══════════ -->
 <div id="history-overlay">
@@ -84,6 +80,15 @@
   </div>
   <div id="game-detail-content"></div>
 </div>
+
+<!-- ═══════════════ HELP OVERLAY ══════════ -->
+ <div id="help-overlay">
+  <div id="help-header">
+    <span id="help-title">Help and Changelog</span>
+    <button id="btn-help-close">✕</button>
+  </div>
+  <div id="help-list"></div>
+ </div>
 
 <!-- ═══════════════ GAME SCREEN ════════════════ -->
 <div id="game-screen">
@@ -234,6 +239,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase.js"></script>
+<script src="version.js"></script>
 <script src="app.js" defer></script>
 </body>
 </html>

@@ -787,6 +787,84 @@ $('btn-game-detail-back').addEventListener('click', () => {
   $('game-detail-overlay').classList.remove('show');
 });
 
+/* ── Help / Changelog overlay ────────────────── */
+function renderHelp() {
+  const { APP_VERSION, CHANGELOG } = window.RefClockVersion;
+  const list = $('help-list');
+  list.textContent = '';
+
+  const banner = document.createElement('div');
+  banner.className = 'help-version-banner';
+  const bannerLabel = document.createElement('span');
+  bannerLabel.className = 'help-version-banner-label';
+  bannerLabel.textContent = 'Current version';
+  const bannerValue = document.createElement('span');
+  bannerValue.className = 'help-version-banner-value';
+  bannerValue.textContent = `v${APP_VERSION}`;
+  banner.append(bannerLabel, bannerValue);
+  list.append(banner);
+
+  const sectionLabel = document.createElement('div');
+  sectionLabel.className = 'help-section-label';
+  sectionLabel.textContent = 'Changelog';
+  list.append(sectionLabel);
+
+  CHANGELOG.forEach(entry => {
+    const item = document.createElement('div');
+    item.className = 'changelog-item';
+
+    const head = document.createElement('div');
+    head.className = 'changelog-item-head';
+    const ver = document.createElement('span');
+    ver.className = 'changelog-item-version';
+    ver.textContent = `v${entry.version}`;
+    const date = document.createElement('span');
+    date.className = 'changelog-item-date';
+    date.textContent = entry.date;
+    head.append(ver, date);
+
+    const changes = document.createElement('ul');
+    changes.className = 'changelog-item-changes';
+    entry.changes.forEach(c => {
+      const li = document.createElement('li');
+      li.textContent = c;
+      changes.append(li);
+    });
+
+    item.append(head, changes);
+    list.append(item);
+  });
+
+  const divider = document.createElement('div');
+  divider.className = 'help-divider';
+  list.append(divider);
+
+  const linksLabel = document.createElement('div');
+  linksLabel.className = 'help-section-label';
+  linksLabel.textContent = 'More';
+  list.append(linksLabel);
+
+  const privacyLink = document.createElement('a');
+  privacyLink.className = 'help-link';
+  privacyLink.href = 'privacy.html';
+  privacyLink.textContent = 'Privacy policy';
+  list.append(privacyLink);
+
+  const accountLink = document.createElement('a');
+  accountLink.className = 'help-account-link';
+  accountLink.href = 'delete-account.html';
+  accountLink.textContent = 'Delete account & data';
+  list.append(accountLink);
+}
+
+$('btn-help').addEventListener('click', () => {
+  renderHelp();
+  $('help-overlay').classList.add('show');
+});
+$('btn-help-close').addEventListener('click', () => {
+  $('help-overlay').classList.remove('show');
+});
+
 /* ── Notes ───────────────────────────────────── */
 function loadNotes() {
   return localStorage.getItem('refclock_notes') || '';

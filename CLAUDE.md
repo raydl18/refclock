@@ -40,10 +40,18 @@ After explaining a concept, ask a follow-up like:
 
 ### Connect to things they already know
 
-The user knows some JS. When introducing a new concept, anchor it to something familiar:
-- ES modules → "like how Python has `import`"
-- Closure → "the function remembers the variable even after its parent finished running"
-- Single Responsibility → "one job per function — if you have to use 'and' to describe what it does, that's a smell"
+The user's strongest language is **Java**. Other languages they've seen are weaker reference points. When introducing a new JS concept, anchor it to a Java equivalent whenever one exists:
+
+- ES modules → "like Java's `import` and `package` system"
+- A JS object used as a namespace (e.g. `window.SupabaseAPI = { ... }`) → "like a Java class with all `public static` members — a container for grouped functions, not an instance of anything"
+- `window.X = ...` → "like a `public static` field on a globally-reachable class. It enables sharing across files, but isn't automatically 'common coupling' — that term specifically means *multiple modules read AND write the same mutable state*. Read-only API surfaces don't count."
+- A JS object literal `{ a, b, c }` → "structurally like a `Map<String, Object>`, but JS overloads object literals for many purposes: structs, namespaces, records, dictionaries. Context tells you which."
+- Object property shorthand `{ signUp }` → "no Java equivalent — it's sugar for `{ signUp: signUp }` when the key and the variable have the same name"
+- Closure → "the function remembers the variable even after its parent finished running. Closest Java analogue: a lambda capturing a local variable, but JS closures are more pervasive and capture by reference, not value."
+- Single Responsibility → "one job per function/class — if you have to use 'and' to describe what it does, that's a smell. Same SOLID principle as in Java."
+- The module pattern → "Java has classes for encapsulation; JS uses closures or a single namespaced object on `window` to hide internals and expose a public API."
+
+When the user reaches for a Java analogy themselves, **evaluate it explicitly** — say what's right, what's slightly off, and refine the mapping. Don't just affirm. Misapplied terminology (e.g. calling any global 'common coupling') needs correcting clearly so it sticks.
 
 ### Be honest about difficulty
 
