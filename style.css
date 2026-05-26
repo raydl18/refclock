@@ -989,6 +989,7 @@ body {
   background: rgba(96, 165, 250, 0.18);
 }
 #btn-help:active { transform: scale(0.92); }
+body:has(#game-screen.active) #btn-help { display: none; }
 #btn-help:focus-visible {
   outline: 2px solid #60a5fa;
   outline-offset: 2px;
