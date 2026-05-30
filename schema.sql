@@ -24,3 +24,7 @@ create policy "owner insert" on games
 
 create policy "owner delete" on games
   for delete using (auth.uid() = user_id);
+
+-- Intentional: no UPDATE policy. Saved games are immutable (no edit flow in the
+-- app). With RLS enabled, any UPDATE is denied by default. If an edit feature is
+-- ever added, an "owner update" policy must be created or updates will fail.
