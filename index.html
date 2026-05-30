@@ -7,10 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>RefClock</title>
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="theme-color" content="#0b1326" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -18,52 +16,95 @@
 <!-- ═══════════════ SETUP SCREEN ═══════════════ -->
 <div id="setup-screen">
 
-  <!-- Auth bar -->
-  <div id="auth-bar">
-    <div id="auth-signed-out">
-      <button class="auth-btn auth-btn-ghost" id="btn-signin-show">Sign In</button>
+  <!-- Top header: brand + auth -->
+  <header id="setup-header">
+    <div class="brand">
+      <svg class="brand-icon icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
+      <h1 class="brand-name">REFCLOCK</h1>
     </div>
-    <div id="auth-signed-in" style="display:none">
-      <span id="auth-greeting"></span>
-      <button class="auth-btn auth-btn-ghost" id="btn-signout">Sign out</button>
-    </div>
-  </div>
-
-  <h1>RefClock</h1>
-
-  <div class="setup-row">
-    <!-- Team A -->
-    <div class="team-setup">
-      <div class="team-color-swatch" id="swatch-a" style="background:#1d4ed8;">
-        <input type="color" id="color-a" value="#1d4ed8" />
+    <div id="auth-bar">
+      <div id="auth-signed-out">
+        <button class="auth-btn auth-btn-link" id="btn-signin-show">Sign In</button>
       </div>
-      <input class="team-name-input" id="name-a" type="text" placeholder="Team A" maxlength="16" value="Home" />
-    </div>
-
-    <!-- Team B -->
-    <div class="team-setup">
-      <div class="team-color-swatch" id="swatch-b" style="background:#dc2626;">
-        <input type="color" id="color-b" value="#dc2626" />
-      </div>
-      <input class="team-name-input" id="name-b" type="text" placeholder="Team B" maxlength="16" value="Away" />
-    </div>
-
-    <!-- Duration -->
-    <div class="duration-setup">
-      <label>Time Per Half</label>
-      <div class="time-inputs">
-        <input type="number" id="input-min" value="45" min="1" max="99" />
-        <span>:</span>
-        <input type="number" id="input-sec" value="00" min="0" max="59" />
+      <div id="auth-signed-in" style="display:none">
+        <span id="auth-greeting"></span>
+        <button class="auth-btn auth-btn-link" id="btn-signout">Sign out</button>
       </div>
     </div>
-  </div>
+  </header>
 
-  <button id="btn-start-game">Kick Off</button>
-  <button id="btn-history" style="display:none">History</button>
+  <!-- Main content -->
+  <main class="setup-main">
+    <div class="setup-row">
+
+      <!-- Team A -->
+      <div class="team-setup">
+        <div class="team-color-swatch swatch-home" id="swatch-a" style="background:#1d4ed8;">
+          <svg class="team-icon icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <input type="color" id="color-a" value="#1d4ed8" aria-label="Home team color" />
+        </div>
+        <div class="team-setup-body">
+          <span class="team-setup-label">Home Team</span>
+          <input class="team-name-input" id="name-a" type="text" placeholder="Enter Name" maxlength="16" value="Home" />
+          <div class="team-setup-underline"></div>
+        </div>
+      </div>
+
+      <!-- Team B -->
+      <div class="team-setup">
+        <div class="team-color-swatch swatch-away" id="swatch-b" style="background:#dc2626;">
+          <svg class="team-icon icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+          <input type="color" id="color-b" value="#dc2626" aria-label="Away team color" />
+        </div>
+        <div class="team-setup-body">
+          <span class="team-setup-label">Away Team</span>
+          <input class="team-name-input" id="name-b" type="text" placeholder="Enter Name" maxlength="16" value="Away" />
+          <div class="team-setup-underline"></div>
+        </div>
+      </div>
+
+      <!-- Duration -->
+      <div class="duration-setup">
+        <span class="duration-label">Time Per Half</span>
+        <div class="time-inputs">
+          <div class="time-cell">
+            <input type="number" id="input-min" value="45" min="1" max="99" aria-label="Minutes" />
+          </div>
+          <span class="time-sep">:</span>
+          <div class="time-cell">
+            <input type="number" id="input-sec" value="00" min="0" max="59" aria-label="Seconds" />
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <button id="btn-start-game">Kick Off</button>
+  </main>
+
+  <!-- Footer: links + copyright -->
+  <footer id="setup-footer">
+    <div class="footer-links">
+      <a href="privacy.html" class="footer-link">Privacy</a>
+      <a href="delete-account.html" class="footer-link">Delete account &amp; data</a>
+      <button type="button" id="btn-help-link" class="footer-link footer-link-btn">Help</button>
+    </div>
+    <div class="footer-copyright">© 2026 REFCLOCK TELEMETRY</div>
+  </footer>
+
+  <!-- Bottom nav -->
+  <nav id="setup-nav" aria-label="Primary">
+    <button type="button" class="nav-btn nav-btn-active" aria-label="Setup" aria-current="page">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+    </button>
+    <button type="button" class="nav-btn" id="btn-history" style="display:none" aria-label="Match history">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+    </button>
+    <button type="button" class="nav-btn" id="btn-help" aria-label="Settings and help">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    </button>
+  </nav>
 </div>
-
-<button id="btn-help" aria-label="Help and changelog">?</button>
 
 <!-- ═══════════════ HISTORY OVERLAY ══════════ -->
 <div id="history-overlay">
@@ -237,7 +278,10 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.106.2/dist/umd/supabase.js"
+  integrity="sha384-m/8UHFJHeU6nrCKP2hBnAseuvAKUmLF+8e5bWos5CJL023vuxX7kiVL5t8yjsJhV"
+  crossorigin="anonymous"></script>
 <script src="supabase.js"></script>
 <script src="version.js"></script>
 <script src="app.js" defer></script>
