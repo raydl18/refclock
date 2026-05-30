@@ -1,5 +1,13 @@
 const CACHE = 'refclock-v12';
-const ASSETS = ['/refclock', '/refclock/index.html', '/refclock/style.css', '/refclock/app.js', '/refclock/version.js', '/refclock/manifest.json', '/refclock/icons/icon-192.png', '/refclock/icons/icon-512.png'];
+const ASSETS = [
+  '/refclock', '/refclock/index.html', '/refclock/style.css', '/refclock/app.js',
+  '/refclock/supabase.js', '/refclock/version.js', '/refclock/manifest.json',
+  '/refclock/icons/icon-192.png', '/refclock/icons/icon-512.png',
+  '/refclock/fonts/space-grotesk-400.woff2', '/refclock/fonts/space-grotesk-500.woff2',
+  '/refclock/fonts/space-grotesk-600.woff2', '/refclock/fonts/space-grotesk-700.woff2',
+  '/refclock/fonts/jetbrains-mono-400.woff2', '/refclock/fonts/jetbrains-mono-500.woff2',
+  '/refclock/fonts/jetbrains-mono-700.woff2',
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
