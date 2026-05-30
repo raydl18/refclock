@@ -1,4 +1,4 @@
-const CACHE = 'refclock-v11';
+const CACHE = 'refclock-v12';
 const ASSETS = ['/refclock', '/refclock/index.html', '/refclock/style.css', '/refclock/app.js', '/refclock/version.js', '/refclock/manifest.json', '/refclock/icons/icon-192.png', '/refclock/icons/icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -21,6 +21,7 @@ self.addEventListener('fetch', e => {
 
 let notifIds = [];
 self.addEventListener('message', e => {
+  if (!e.data || typeof e.data.type !== 'string') return;
   if (e.data.type === 'SCHEDULE_NOTIF') {
     const { delay, title, body, tag } = e.data;
     notifIds.push(setTimeout(() =>

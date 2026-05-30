@@ -45,7 +45,7 @@ async function fetchGames() {
     .select('*')
     .order('created_at', { ascending: false })
     .limit(50);
-  return error ? [] : data;
+  return { data: data || [], error };
 }
 
 function onAuthStateChange(callback) {

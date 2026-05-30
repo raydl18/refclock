@@ -19,6 +19,20 @@ let timerInterval = null;
 function pad(n) { return String(n).padStart(2, '0'); }
 function fmt(s) { return `${pad(Math.floor(s/60))}:${pad(s%60)}`; }
 
+// Escape user-controlled values before interpolating into innerHTML.
+// Data can originate from localStorage or Supabase and must not be trusted as HTML.
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
+// Restored/tampered state may carry an invalid color that gets written into a
+// style attribute. Only accept a literal #rrggbb value; otherwise fall back.
+function safeColor(value, fallback) {
+  return /^#[0-9a-fA-F]{6}$/.test(value) ? value : fallback;
+}
+
 function textColor(hex) {
   const r = parseInt(hex.slice(1,3),16),
         g = parseInt(hex.slice(3,5),16),
@@ -204,7 +218,7 @@ function saveState() {
       running: state.running,
       elapsedSeconds: state.elapsedSeconds,
     }));
-  } catch(_) {}
+  } catch(err) { console.warn('saveState failed (storage full or unavailable):', err); }
 }
 
 function clearSavedState() {
@@ -217,10 +231,20 @@ function restoreSavedGame() {
     if (!raw) return;
     const s = JSON.parse(raw);
 
-    state.teams = s.teams;
-    state.events = s.events || [];
-    state.totalSeconds = s.totalSeconds;
-    state.currentHalf = s.currentHalf || 1;
+    // Sanitize restored data — it can be edited or corrupted in localStorage.
+    if (!s || !Array.isArray(s.teams) || s.teams.length < 2) {
+      clearSavedState();
+      return;
+    }
+    const defaults = ['#1d4ed8', '#dc2626'];
+    state.teams = s.teams.slice(0, 2).map((t, i) => ({
+      name:  typeof t.name === 'string' ? t.name : (i === 0 ? 'Home' : 'Away'),
+      color: safeColor(t.color, defaults[i]),
+      score: Number.isFinite(t.score) ? t.score : 0,
+    }));
+    state.events = Array.isArray(s.events) ? s.events : [];
+    state.totalSeconds = Number.isFinite(s.totalSeconds) && s.totalSeconds > 0 ? s.totalSeconds : 2700;
+    state.currentHalf = s.currentHalf === 2 ? 2 : 1;
 
     const wasRunning = !!(s.running && s.startEpoch);
     if (wasRunning) {
@@ -263,7 +287,10 @@ function restoreSavedGame() {
       btnPlay.disabled = false;
       btnPause.disabled = true;
     }
-  } catch(_) {}
+  } catch(err) {
+    console.warn('restoreSavedGame failed; clearing corrupted state:', err);
+    clearSavedState();
+  }
 }
 
 /* ── Notifications ───────────────────────── */
@@ -275,7 +302,7 @@ async function requestNotifPermission() {
 
 function scheduleNotifications() {
   cancelNotifications();
-  if (Notification.permission !== 'granted') return;
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
   const sw = navigator.serviceWorker && navigator.serviceWorker.controller;
   if (!sw) return;
 
@@ -455,8 +482,8 @@ function addEventToLog(team, ev) {
   item.className = 'event-item';
   item.innerHTML = `
     <span class="event-icon">${eventIcon(ev)}</span>
-    <span class="event-detail">${eventLabel(ev)}</span>
-    <span class="event-time">${ev.timestamp}</span>
+    <span class="event-detail">${escapeHTML(eventLabel(ev))}</span>
+    <span class="event-time">${escapeHTML(ev.timestamp)}</span>
   `;
   log.appendChild(item);
   log.scrollTop = log.scrollHeight;
@@ -465,6 +492,18 @@ function addEventToLog(team, ev) {
 function renderScores() {
   $('score-a').textContent = state.teams[0].score;
   $('score-b').textContent = state.teams[1].score;
+}
+
+// Shared renderer for the stats/detail event columns (end-game summary + history detail).
+function renderEventList(evts) {
+  if (!evts.length) return `<div class="no-events">—</div>`;
+  return evts.map(ev => `
+    <div class="stats-event-item">
+      <span class="s-icon">${eventIcon(ev)}</span>
+      <span class="s-detail">${escapeHTML(eventLabel(ev))}</span>
+      <span class="s-time">${escapeHTML(ev.timestamp)}</span>
+    </div>
+  `).join('');
 }
 
 /* ── End Game ────────────────────────────── */
@@ -476,39 +515,28 @@ function showEndGame() {
   const [a, b] = state.teams;
 
   $('final-scoreboard').innerHTML = `
-    <div class="final-team" style="background:${a.color};color:${textColor(a.color)}">
-      <div class="final-team-name">${a.name}</div>
-      <div class="final-score">${a.score}</div>
+    <div class="final-team" style="background:${escapeHTML(a.color)};color:${textColor(a.color)}">
+      <div class="final-team-name">${escapeHTML(a.name)}</div>
+      <div class="final-score">${escapeHTML(a.score)}</div>
     </div>
     <div class="final-vs">–</div>
-    <div class="final-team" style="background:${b.color};color:${textColor(b.color)}">
-      <div class="final-team-name">${b.name}</div>
-      <div class="final-score">${b.score}</div>
+    <div class="final-team" style="background:${escapeHTML(b.color)};color:${textColor(b.color)}">
+      <div class="final-team-name">${escapeHTML(b.name)}</div>
+      <div class="final-score">${escapeHTML(b.score)}</div>
     </div>
   `;
 
   const evA = state.events.filter(e => e.team === 0);
   const evB = state.events.filter(e => e.team === 1);
 
-  function renderStatEvents(evts) {
-    if (!evts.length) return `<div class="no-events">—</div>`;
-    return evts.map(ev => `
-      <div class="stats-event-item">
-        <span class="s-icon">${eventIcon(ev)}</span>
-        <span class="s-detail">${eventLabel(ev)}</span>
-        <span class="s-time">${ev.timestamp}</span>
-      </div>
-    `).join('');
-  }
-
   $('stats-row').innerHTML = `
     <div class="stats-team-col">
-      <div class="col-header" style="color:${a.color}">${a.name}</div>
-      ${renderStatEvents(evA)}
+      <div class="col-header" style="color:${escapeHTML(a.color)}">${escapeHTML(a.name)}</div>
+      ${renderEventList(evA)}
     </div>
     <div class="stats-team-col">
-      <div class="col-header" style="color:${b.color}">${b.name}</div>
-      ${renderStatEvents(evB)}
+      <div class="col-header" style="color:${escapeHTML(b.color)}">${escapeHTML(b.name)}</div>
+      ${renderEventList(evB)}
     </div>
   `;
 
@@ -517,14 +545,15 @@ function showEndGame() {
   endgameOverlay.classList.add('show');
 }
 
-function showSavedBadge() {
+function showSavedBadge(message = 'Saved', isError = false) {
   let badge = $('saved-badge');
   if (!badge) {
     badge = document.createElement('div');
     badge.id = 'saved-badge';
     endgameOverlay.appendChild(badge);
   }
-  badge.textContent = 'Saved';
+  badge.textContent = message;
+  badge.classList.toggle('error', isError);
   badge.classList.add('show');
   setTimeout(() => badge.classList.remove('show'), 2500);
 }
@@ -547,8 +576,10 @@ $('btn-save-game').addEventListener('click', async () => {
   };
   const error = await SupabaseAPI.saveGame(record);
   if (error) {
+    console.error('saveGame failed:', error);
     btn.disabled = false;
     btn.textContent = 'Save Game';
+    showSavedBadge('Save failed — try again', true);
   } else {
     btn.textContent = 'Saved ✓';
     showSavedBadge();
@@ -717,7 +748,12 @@ async function openHistory() {
   list.innerHTML = '<div class="history-loading">Loading…</div>';
   $('history-overlay').classList.add('show');
 
-  const games = await SupabaseAPI.fetchGames();
+  const { data: games, error } = await SupabaseAPI.fetchGames();
+  if (error) {
+    console.error('fetchGames failed:', error);
+    list.innerHTML = '<div class="history-empty">Couldn’t load your games. Check your connection and try again.</div>';
+    return;
+  }
   if (!games.length) {
     list.innerHTML = '<div class="history-empty">No saved games yet.</div>';
     return;
@@ -726,12 +762,12 @@ async function openHistory() {
   list.innerHTML = games.map((g, i) => `
     <div class="history-item" data-index="${i}">
       <div class="history-item-score">
-        <span>${g.home_team}</span>
-        <span>${g.home_score} – ${g.away_score}</span>
-        <span>${g.away_team}</span>
+        <span>${escapeHTML(g.home_team)}</span>
+        <span>${escapeHTML(g.home_score)} – ${escapeHTML(g.away_score)}</span>
+        <span>${escapeHTML(g.away_team)}</span>
       </div>
-      <div class="history-item-meta">${fmtDate(g.created_at)}</div>
-      ${g.notes ? `<div class="history-item-notes">${g.notes.replace(/</g,'&lt;')}</div>` : ''}
+      <div class="history-item-meta">${escapeHTML(fmtDate(g.created_at))}</div>
+      ${g.notes ? `<div class="history-item-notes">${escapeHTML(g.notes)}</div>` : ''}
     </div>
   `).join('');
 
@@ -745,35 +781,24 @@ function openGameDetail(g) {
   const homeEvts = events.filter(e => e.team === 0);
   const awayEvts = events.filter(e => e.team === 1);
 
-  function renderDetailEvents(evts) {
-    if (!evts.length) return `<div class="no-events">—</div>`;
-    return evts.map(ev => `
-      <div class="stats-event-item">
-        <span class="s-icon">${eventIcon(ev)}</span>
-        <span class="s-detail">${eventLabel(ev)}</span>
-        <span class="s-time">${ev.timestamp}</span>
-      </div>
-    `).join('');
-  }
-
   $('game-detail-content').innerHTML = `
     <div class="final-scoreboard" style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px">
-      <div style="font-weight:900;font-size:1.1rem">${g.home_team}</div>
-      <div style="font-size:1.8rem;font-weight:900">${g.home_score} – ${g.away_score}</div>
-      <div style="font-weight:900;font-size:1.1rem">${g.away_team}</div>
+      <div style="font-weight:900;font-size:1.1rem">${escapeHTML(g.home_team)}</div>
+      <div style="font-size:1.8rem;font-weight:900">${escapeHTML(g.home_score)} – ${escapeHTML(g.away_score)}</div>
+      <div style="font-weight:900;font-size:1.1rem">${escapeHTML(g.away_team)}</div>
     </div>
-    <div style="font-size:0.65rem;color:#555;letter-spacing:1px;text-align:center;margin-bottom:16px">${fmtDate(g.created_at)}</div>
+    <div style="font-size:0.65rem;color:#555;letter-spacing:1px;text-align:center;margin-bottom:16px">${escapeHTML(fmtDate(g.created_at))}</div>
     <div class="stats-row">
       <div class="stats-team-col">
-        <div class="col-header">${g.home_team}</div>
-        ${renderDetailEvents(homeEvts)}
+        <div class="col-header">${escapeHTML(g.home_team)}</div>
+        ${renderEventList(homeEvts)}
       </div>
       <div class="stats-team-col">
-        <div class="col-header">${g.away_team}</div>
-        ${renderDetailEvents(awayEvts)}
+        <div class="col-header">${escapeHTML(g.away_team)}</div>
+        ${renderEventList(awayEvts)}
       </div>
     </div>
-    ${g.notes ? `<div style="margin-top:16px;font-size:0.8rem;color:#888;font-style:italic;padding:10px;background:#16213e;border-radius:8px">${g.notes.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>` : ''}
+    ${g.notes ? `<div style="margin-top:16px;font-size:0.8rem;color:#888;font-style:italic;padding:10px;background:#16213e;border-radius:8px">${escapeHTML(g.notes).replace(/\n/g,'<br>')}</div>` : ''}
   `;
 
   $('game-detail-overlay').classList.add('show');
@@ -857,10 +882,13 @@ function renderHelp() {
   list.append(accountLink);
 }
 
-$('btn-help').addEventListener('click', () => {
+function openHelp() {
   renderHelp();
   $('help-overlay').classList.add('show');
-});
+}
+$('btn-help').addEventListener('click', openHelp);
+const btnHelpLink = $('btn-help-link');
+if (btnHelpLink) btnHelpLink.addEventListener('click', openHelp);
 $('btn-help-close').addEventListener('click', () => {
   $('help-overlay').classList.remove('show');
 });
