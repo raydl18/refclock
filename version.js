@@ -1,5 +1,10 @@
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.3.0';
 const CHANGELOG = [
+    {
+        version: '1.3.0',
+        date: '2026-05-30',
+        changes: ['Updated the UI, adding a bottom navbar for game, history, and settings.']
+    },
     {
         version: '1.2.0',
         date: '2026-05-17',
