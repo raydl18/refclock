@@ -1,5 +1,10 @@
-const APP_VERSION = '1.3.0';
+const APP_VERSION = '1.4.0';
 const CHANGELOG = [
+    {
+        version: '1.4.0',
+        date: '2026-06-06',
+        changes: ['Fixed up the main screen, updating the logo icon and removing repeated links that are accessible from settings menu']
+    },
     {
         version: '1.3.0',
         date: '2026-05-30',

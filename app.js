@@ -887,8 +887,6 @@ function openHelp() {
   $('help-overlay').classList.add('show');
 }
 $('btn-help').addEventListener('click', openHelp);
-const btnHelpLink = $('btn-help-link');
-if (btnHelpLink) btnHelpLink.addEventListener('click', openHelp);
 $('btn-help-close').addEventListener('click', () => {
   $('help-overlay').classList.remove('show');
 });
