@@ -1,3 +1,4 @@
+// AAB VERSION: 9
 const APP_VERSION = '1.4.0';
 const CHANGELOG = [
     {
