@@ -115,6 +115,7 @@ $('btn-start-game').addEventListener('click', async () => {
   $('notes-ingame').value = loadNotes();
   setupScreen.style.display = 'none';
   gameScreen.classList.add('active');
+  document.body.classList.add('in-game');
 
   await requestNotifPermission();
 });
@@ -277,6 +278,7 @@ function restoreSavedGame() {
     $('notes-ingame').value = loadNotes();
     setupScreen.style.display = 'none';
     gameScreen.classList.add('active');
+    document.body.classList.add('in-game');
 
     if (state.remaining <= 0) {
       clockEl.classList.add('danger');
@@ -609,6 +611,8 @@ btnNewGame.addEventListener('click', () => {
   saveBtn.disabled = false;
   saveBtn.textContent = 'Save Game';
   setupScreen.style.display = '';
+  document.body.classList.remove('in-game');
+  showView('timer');
 });
 
 /* ── Service worker ─────────────────────── */
@@ -638,13 +642,13 @@ function setAuthState(user) {
     $('auth-signed-in').style.display  = '';
     const name = user.user_metadata?.display_name;
     $('auth-greeting').textContent = name ? `Hey, ${name}` : user.email;
-    $('btn-history').style.display     = '';
     closeAuthModal();
   } else {
     $('auth-signed-out').style.display = '';
     $('auth-signed-in').style.display  = 'none';
-    $('btn-history').style.display     = 'none';
   }
+  // History is always reachable now; refresh it if it's the current view.
+  if ($('history-overlay').classList.contains('show')) loadHistory();
 }
 
 function openAuthModal(panel) {
@@ -758,10 +762,24 @@ function fmtDate(iso) {
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-async function openHistory() {
+async function loadHistory() {
   const list = $('history-list');
+
+  // History is browsable while logged out — prompt them to create an account to save.
+  if (!currentUser) {
+    list.innerHTML = `
+      <div class="history-signin-prompt">
+        <svg class="prompt-icon icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+        <div class="prompt-title">Save your match history</div>
+        <div class="prompt-text">Create a free account to save games and revisit scores, cards, and notes any time.</div>
+        <button class="prompt-btn" id="history-signup-btn">Sign In / Sign Up</button>
+      </div>`;
+    const signupBtn = $('history-signup-btn');
+    if (signupBtn) signupBtn.addEventListener('click', () => openAuthModal('signup'));
+    return;
+  }
+
   list.innerHTML = '<div class="history-loading">Loading…</div>';
-  $('history-overlay').classList.add('show');
 
   const { data: games, error } = await SupabaseAPI.fetchGames();
   if (error) {
@@ -819,10 +837,40 @@ function openGameDetail(g) {
   $('game-detail-overlay').classList.add('show');
 }
 
-$('btn-history').addEventListener('click', openHistory);
-$('btn-history-close').addEventListener('click', () => {
-  $('history-overlay').classList.remove('show');
-});
+/* ── Bottom-nav router ───────────────────────── */
+// The nav routes between three "home shell" views. Timer = setup screen (the
+// base layer); History and Settings are overlays shown on top of it. The nav
+// itself is a persistent fixed element, so it replaces the old per-overlay ✕.
+const navBtns = {
+  timer:    $('btn-nav-timer'),
+  history:  $('btn-history'),
+  settings: $('btn-help'),
+};
+
+function setNavActive(view) {
+  Object.entries(navBtns).forEach(([key, btn]) => {
+    if (!btn) return;
+    const active = key === view;
+    btn.classList.toggle('nav-btn-active', active);
+    if (active) btn.setAttribute('aria-current', 'page');
+    else btn.removeAttribute('aria-current');
+  });
+}
+
+function showView(view) {
+  $('game-detail-overlay').classList.remove('show');
+  $('history-overlay').classList.toggle('show', view === 'history');
+  $('help-overlay').classList.toggle('show', view === 'settings');
+  setNavActive(view);
+  if (view === 'history') loadHistory();
+  else if (view === 'settings') renderHelp();
+}
+
+navBtns.timer.addEventListener('click', () => showView('timer'));
+navBtns.history.addEventListener('click', () => showView('history'));
+navBtns.settings.addEventListener('click', () => showView('settings'));
+
+// Drill-in game detail sits above the history list; Back returns to it.
 $('btn-game-detail-back').addEventListener('click', () => {
   $('game-detail-overlay').classList.remove('show');
 });
@@ -896,15 +944,6 @@ function renderHelp() {
   accountLink.textContent = 'Delete account & data';
   list.append(accountLink);
 }
-
-function openHelp() {
-  renderHelp();
-  $('help-overlay').classList.add('show');
-}
-$('btn-help').addEventListener('click', openHelp);
-$('btn-help-close').addEventListener('click', () => {
-  $('help-overlay').classList.remove('show');
-});
 
 /* ── Notes ───────────────────────────────────── */
 function loadNotes() {

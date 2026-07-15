@@ -2,6 +2,11 @@
 const APP_VERSION = '1.4.0';
 const CHANGELOG = [
     {
+        version: '1.4.1',
+        date: '2026-07-14',
+        changes: ['Improved app design and fixed functionality of the bottom navbar']
+    },
+    {
         version: '1.4.0',
         date: '2026-06-06',
         changes: ['Fixed up the main screen, updating the logo icon and removing repeated links that are accessible from settings menu']
