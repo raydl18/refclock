@@ -702,6 +702,7 @@ button, input, textarea {
   background: none;
 }
 
+/* display-lg (DESIGN.md): Space Grotesk 72px / 700 / -0.04em (kept italic per the Stitch match screen) */
 .team-panel .score {
   font-family: var(--font-display);
   font-size: 4.5rem;
@@ -709,7 +710,7 @@ button, input, textarea {
   font-style: italic;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.4);
   margin-top: 2px;
 }
@@ -741,9 +742,21 @@ button, input, textarea {
   backdrop-filter: blur(8px);
 }
 
-.event-icon { font-size: 0.9rem; flex-shrink: 0; }
+.event-icon { font-size: 0.95rem; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
 .event-detail { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .event-time { font-family: var(--font-mono); font-size: 0.6rem; opacity: 0.7; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+
+/* Shared event icons (no emoji) — used in the in-game log, end-game and history */
+.ev-ico { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+.ev-ball { width: 1.15em; height: 1.15em; }
+.ev-card {
+  width: 0.72em;
+  height: 0.98em;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.ev-card-y { background: #facc15; }
+.ev-card-r { background: #ef4444; }
 
 /* Team action buttons — glassmorphic */
 .team-actions {
@@ -818,20 +831,24 @@ button, input, textarea {
   position: relative;
 }
 
+/* label-caps (DESIGN.md): Space Grotesk 12px / 700 / 0.15em */
 #center-panel .app-title {
   font-family: var(--font-display);
-  font-size: 0.6rem;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 700;
-  letter-spacing: 0.4em;
-  padding-left: 0.4em; /* balance the trailing letter-spacing so text stays centered */
+  letter-spacing: 0.3em;
+  padding-left: 0.3em; /* balance the trailing letter-spacing so text stays centered */
   color: var(--primary);
   opacity: 0.9;
   text-transform: uppercase;
 }
 
+/* timer-mono (DESIGN.md): JetBrains Mono 48px / 700 / -0.02em */
 #clock {
   font-family: var(--font-mono);
-  font-size: 2.15rem;
+  font-size: 3rem;
+  line-height: 1;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
@@ -856,9 +873,11 @@ button, input, textarea {
   50%      { opacity: 0.45; }
 }
 
+/* label-caps */
 #period-label {
   font-family: var(--font-display);
-  font-size: 0.6rem;
+  font-size: 0.72rem;
+  line-height: 16px;
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -869,12 +888,12 @@ button, input, textarea {
 
 #status-label {
   font-family: var(--font-display);
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
   color: var(--on-surface-variant);
-  opacity: 0.5;
+  opacity: 0.55;
   text-align: center;
   padding: 0;
 }
@@ -1326,7 +1345,7 @@ button, input, textarea {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(120% 60% at 50% 0%, rgba(248, 113, 113, 0.08) 0%, transparent 60%),
+    radial-gradient(120% 55% at 50% 0%, rgba(75, 226, 119, 0.08) 0%, transparent 60%),
     var(--surface-container-lowest);
   z-index: 30;
   flex-direction: column;
@@ -1337,25 +1356,32 @@ button, input, textarea {
 }
 #endgame-overlay.show { display: flex; }
 
-#endgame-overlay h2 {
-  font-family: var(--font-display);
-  font-size: 2.25rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-align: center;
-  color: var(--tertiary-strong);
-  text-shadow: 0 0 24px var(--tertiary-glow);
+/* Header: eyebrow + title */
+.endgame-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   margin-top: 8px;
 }
-
-#endgame-overlay h2::after {
-  content: '';
-  display: block;
-  width: 48px;
-  height: 2px;
-  margin: 12px auto 0;
-  background: var(--tertiary-strong);
-  box-shadow: 0 0 12px var(--tertiary-glow);
+.endgame-eyebrow {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+#endgame-overlay h2 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  line-height: 1;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #fff;
 }
 
 .final-scoreboard {
@@ -1391,18 +1417,29 @@ button, input, textarea {
 
 .final-team > * { position: relative; }
 
-.final-team .final-team-name {
+.final-team .final-team-side {
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  opacity: 0.9;
+  opacity: 0.65;
+  margin-bottom: 2px;
 }
 
+.final-team .final-team-name {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+/* display-lg (DESIGN.md): Space Grotesk 72px / 700 / -0.04em */
 .final-team .final-score {
-  font-family: var(--font-mono);
-  font-size: 3.6rem;
+  font-family: var(--font-display);
+  font-size: 3.75rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -1411,11 +1448,11 @@ button, input, textarea {
 
 .final-vs {
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.15em;
-  color: var(--on-surface-muted);
-  padding: 0 12px;
+  color: var(--primary);
+  padding: 0 10px;
   background: var(--surface);
   align-self: stretch;
   display: flex;
@@ -1430,9 +1467,11 @@ button, input, textarea {
   gap: 10px;
 }
 
+/* label-caps */
 .stats-section h3 {
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
+  line-height: 16px;
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -1480,7 +1519,7 @@ button, input, textarea {
   gap: 6px;
 }
 
-.stats-event-item .s-icon { font-size: 1rem; }
+.stats-event-item .s-icon { font-size: 1rem; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .stats-event-item .s-detail { flex: 1; font-weight: 500; }
 .stats-event-item .s-time { font-family: var(--font-mono); font-size: 0.7rem; color: var(--on-surface-muted); font-variant-numeric: tabular-nums; }
 

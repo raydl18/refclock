@@ -472,9 +472,14 @@ $('goal-b').addEventListener('click', () => openModal(1, 'goal'));
 $('card-b').addEventListener('click', () => openModal(1, 'card'));
 
 /* ── Event log rendering ─────────────────── */
+// Inline-SVG/markup icons (no emoji) — consistent with the rest of the UI and
+// safe to inject: the markup here is static, never user-controlled.
 function eventIcon(ev) {
-  if (ev.type === 'goal') return '⚽';
-  return ev.cardType === 'red' ? '🟥' : '🟨';
+  if (ev.type === 'goal') {
+    return '<svg class="ev-ico ev-ball" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7l4.76 3.45l-1.76 5.55h-6l-1.76 -5.55z"/><path d="M12 7v-4"/><path d="M15 16l2.5 3"/><path d="M14.26 10.45l3.74 -1.45"/><path d="M9 16l-2.5 3"/><path d="M9.74 10.45l-3.74 -1.45"/></svg>';
+  }
+  const cls = ev.cardType === 'red' ? 'ev-card-r' : 'ev-card-y';
+  return `<span class="ev-ico ev-card ${cls}" aria-hidden="true"></span>`;
 }
 
 function eventLabel(ev) {
@@ -524,11 +529,13 @@ function showEndGame() {
 
   $('final-scoreboard').innerHTML = `
     <div class="final-team" style="background:${escapeHTML(a.color)};color:${textColor(a.color)}">
+      <div class="final-team-side">Home</div>
       <div class="final-team-name">${escapeHTML(a.name)}</div>
       <div class="final-score">${escapeHTML(a.score)}</div>
     </div>
-    <div class="final-vs">–</div>
+    <div class="final-vs">FT</div>
     <div class="final-team" style="background:${escapeHTML(b.color)};color:${textColor(b.color)}">
+      <div class="final-team-side">Away</div>
       <div class="final-team-name">${escapeHTML(b.name)}</div>
       <div class="final-score">${escapeHTML(b.score)}</div>
     </div>
