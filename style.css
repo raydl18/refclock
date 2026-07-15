@@ -222,7 +222,7 @@ button, input, textarea {
   gap: var(--space-sm);
   flex-shrink: 0;
 }
-#auth-signed-in { display: flex; align-items: center; gap: var(--space-sm); }
+#auth-signed-in { position: relative; display: flex; align-items: center; }
 
 /* Auth chip — signed-out "Sign In" trigger and signed-in status indicator */
 .auth-chip {
@@ -247,20 +247,58 @@ button, input, textarea {
 .auth-chip:hover { opacity: 0.85; }
 .auth-chip:active { transform: scale(0.95); }
 
-/* Signed-in state: green-tinted, indicates active session */
-.auth-chip-active {
+/* Signed-in: icon-only member chip (same height as the Sign In chip) */
+.auth-chip-icon {
+  padding: 7px;
+  gap: 0;
+  color: var(--primary);
   background: rgba(75, 226, 119, 0.12);
   border-color: rgba(75, 226, 119, 0.4);
-  color: var(--primary);
-  cursor: default;
-  max-width: 150px;
 }
-.auth-chip-active:hover { opacity: 1; }
-.auth-chip-active #auth-greeting {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.auth-chip-icon .icon { font-size: 18px; }
+
+/* Account popover */
+.account-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: var(--surface-container-high);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--edge-top), 0 12px 32px rgba(0, 0, 0, 0.5);
+  z-index: 75; /* above the bottom nav (70) */
 }
+.account-menu[hidden] { display: none; }
+
+.account-email {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--on-surface);
+  word-break: break-all;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--outline-variant);
+}
+
+.account-signout {
+  padding: 9px 12px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: var(--radius-sm);
+  background: rgba(248, 113, 113, 0.08);
+  color: var(--tertiary-strong);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.account-signout:hover { background: rgba(248, 113, 113, 0.15); }
 
 #auth-greeting {
   font-family: var(--font-display);

@@ -2,6 +2,13 @@
 const APP_VERSION = '1.4.0';
 const CHANGELOG = [
     {
+        version: '1.5.1',
+        date: '2026-07-14',
+        changes: ['Removed display name as a signup field entirely',
+            'Updated authentication flow to improve user experience'
+        ]
+    },
+    {
         version: '1.4.1',
         date: '2026-07-14',
         changes: ['Improved app design and fixed functionality of the bottom navbar']

@@ -640,16 +640,38 @@ function setAuthState(user) {
   if (user) {
     $('auth-signed-out').style.display = 'none';
     $('auth-signed-in').style.display  = '';
-    const name = user.user_metadata?.display_name;
-    $('auth-greeting').textContent = name ? `Hey, ${name}` : user.email;
+    $('account-email').textContent = user.email;
     closeAuthModal();
   } else {
     $('auth-signed-out').style.display = '';
     $('auth-signed-in').style.display  = 'none';
+    closeAccountMenu();
   }
   // History is always reachable now; refresh it if it's the current view.
   if ($('history-overlay').classList.contains('show')) loadHistory();
 }
+
+/* Account popover (member icon → email + sign out) */
+function closeAccountMenu() {
+  const menu = $('account-menu');
+  if (menu) menu.hidden = true;
+  const btn = $('btn-account');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+$('btn-account').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const menu = $('account-menu');
+  const willOpen = menu.hidden;
+  menu.hidden = !willOpen;
+  $('btn-account').setAttribute('aria-expanded', String(willOpen));
+});
+
+// Dismiss the popover when clicking anywhere outside it.
+document.addEventListener('click', (e) => {
+  const menu = $('account-menu');
+  if (menu && !menu.hidden && !e.target.closest('#auth-signed-in')) closeAccountMenu();
+});
 
 function openAuthModal(panel) {
   showAuthPanel(panel || 'signin');
@@ -701,16 +723,10 @@ $('btn-do-signin').addEventListener('click', async () => {
 });
 
 $('btn-do-signup').addEventListener('click', async () => {
-  const name     = $('su-name').value.trim();
   const email    = $('su-email').value.trim();
   const password = $('su-password').value;
   const confirm  = $('su-confirm').value;
   const el       = $('su-error');
-  if (!name) {
-    el.textContent = 'Please enter a display name.';
-    el.style.display = '';
-    return;
-  }
   if (!email || !password) return;
   if (password !== confirm) {
     el.textContent = 'Passwords do not match.';
@@ -723,7 +739,7 @@ $('btn-do-signup').addEventListener('click', async () => {
     return;
   }
   setAuthBtnLoading('btn-do-signup', true, 'Create Account');
-  const { error } = await SupabaseAPI.signUp(email, password, name);
+  const { error } = await SupabaseAPI.signUp(email, password);
   setAuthBtnLoading('btn-do-signup', false, 'Create Account');
   if (error) {
     el.textContent   = error.message;
