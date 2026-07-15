@@ -183,7 +183,8 @@ button, input, textarea {
 #setup-header {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   padding: 40px var(--edge) 16px;
   flex-shrink: 0;
   width: 100%;
@@ -194,32 +195,71 @@ button, input, textarea {
   align-items: center;
   gap: var(--space-sm);
   color: var(--primary);
+  min-width: 0;
 }
+.brand-name { white-space: nowrap; }
 
 .brand-icon {
-  font-size: 40px;
+  font-size: 32px;
   color: var(--primary);
   filter: drop-shadow(0 0 12px var(--primary-glow-soft));
 }
 
 .brand-name {
   font-family: var(--font-display);
-  font-size: 40px;
-  line-height: 44px;
+  font-size: 34px;
+  line-height: 38px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   color: var(--primary);
   margin: 0;
 }
 
 /* ─── AUTH BAR ───────────────────────────────── */
 #auth-bar {
-  position: absolute;
-  top: 12px;
-  right: var(--edge);
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  flex-shrink: 0;
+}
+#auth-signed-in { display: flex; align-items: center; gap: var(--space-sm); }
+
+/* Auth chip — signed-out "Sign In" trigger and signed-in status indicator */
+.auth-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  background: var(--surface-container-highest);
+  color: var(--on-surface);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 150ms, transform 150ms;
+}
+.auth-chip .icon { font-size: 16px; }
+.auth-chip:hover { opacity: 0.85; }
+.auth-chip:active { transform: scale(0.95); }
+
+/* Signed-in state: green-tinted, indicates active session */
+.auth-chip-active {
+  background: rgba(75, 226, 119, 0.12);
+  border-color: rgba(75, 226, 119, 0.4);
+  color: var(--primary);
+  cursor: default;
+  max-width: 150px;
+}
+.auth-chip-active:hover { opacity: 1; }
+.auth-chip-active #auth-greeting {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #auth-greeting {
@@ -258,13 +298,36 @@ button, input, textarea {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 var(--edge) 200px;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: var(--space-lg);
+  padding: var(--space-lg) var(--edge) 120px;
   width: 100%;
   max-width: 32rem;
   margin: 0 auto;
   min-height: 0;
+}
+
+/* ─── SETUP HEADING ──────────────────────────── */
+.setup-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.setup-title {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 44px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--on-surface);
+}
+.setup-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--on-surface-variant);
+  opacity: 0.7;
 }
 
 /* ─── SETUP ROW ──────────────────────────────── */
@@ -273,23 +336,35 @@ button, input, textarea {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  margin-bottom: var(--space-md);
 }
 
 .team-setup {
+  position: relative;
+  overflow: hidden;
   background: rgba(23, 31, 51, 0.7);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   border-radius: 0.5rem;
-  padding: var(--space-md);
+  padding: var(--space-md) var(--space-md) var(--space-md) calc(var(--space-md) + 6px);
   display: flex;
   align-items: center;
   gap: 16px;
   transition: border-color 200ms;
 }
 .team-setup:hover { border-color: rgba(75, 226, 119, 0.4); }
+
+/* Colored left accent bar — reflects the team color (set via --team-accent in app.js) */
+.team-setup::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--team-accent, var(--secondary-container));
+}
 
 .team-color-swatch {
   width: 48px;
@@ -439,8 +514,17 @@ button, input, textarea {
 }
 
 /* ─── PRIMARY BUTTON: KICK OFF ───────────────── */
+.setup-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
 #btn-start-game {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   padding: var(--space-lg);
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
@@ -448,17 +532,29 @@ button, input, textarea {
   background: var(--primary-container);
   color: var(--on-primary-container);
   font-family: var(--font-display);
-  font-size: 32px;
-  line-height: 36px;
+  font-size: 24px;
+  line-height: 28px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   cursor: pointer;
   box-shadow: 0 0 16px rgba(75, 226, 119, 0.2);
   transition: filter 150ms, transform 150ms;
 }
+#btn-start-game .icon { font-size: 28px; }
 #btn-start-game:hover { filter: brightness(1.1); }
 #btn-start-game:active { transform: scale(0.98); }
+
+.setup-caption {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  opacity: 0.4;
+}
 
 /* ─── FOOTER ─────────────────────────────────── */
 #setup-footer {

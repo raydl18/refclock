@@ -24,10 +24,16 @@
     </div>
     <div id="auth-bar">
       <div id="auth-signed-out">
-        <button class="auth-btn auth-btn-link" id="btn-signin-show">Sign In</button>
+        <button class="auth-chip" id="btn-signin-show">
+          <span>Sign In</span>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+        </button>
       </div>
       <div id="auth-signed-in" style="display:none">
-        <span id="auth-greeting"></span>
+        <span class="auth-chip auth-chip-active" id="auth-status-chip">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <span id="auth-greeting"></span>
+        </span>
         <button class="auth-btn auth-btn-link" id="btn-signout">Sign out</button>
       </div>
     </div>
@@ -35,6 +41,12 @@
 
   <!-- Main content -->
   <main class="setup-main">
+
+    <div class="setup-heading">
+      <h2 class="setup-title">Match Setup</h2>
+      <p class="setup-subtitle">Configure telemetry for the upcoming fixture.</p>
+    </div>
+
     <div class="setup-row">
 
       <!-- Team A -->
@@ -63,23 +75,29 @@
         </div>
       </div>
 
-      <!-- Duration -->
-      <div class="duration-setup">
-        <span class="duration-label">Time Per Half</span>
-        <div class="time-inputs">
-          <div class="time-cell">
-            <input type="number" id="input-min" value="45" min="1" max="99" aria-label="Minutes" />
-          </div>
-          <span class="time-sep">:</span>
-          <div class="time-cell">
-            <input type="number" id="input-sec" value="00" min="0" max="59" aria-label="Seconds" />
-          </div>
-        </div>
-      </div>
-
     </div>
 
-    <button id="btn-start-game">Kick Off</button>
+    <!-- Duration (plain — no card box) -->
+    <div class="duration-setup">
+      <span class="duration-label">Time Per Half</span>
+      <div class="time-inputs">
+        <div class="time-cell">
+          <input type="number" id="input-min" value="45" min="1" max="99" aria-label="Minutes" />
+        </div>
+        <span class="time-sep">:</span>
+        <div class="time-cell">
+          <input type="number" id="input-sec" value="00" min="0" max="59" aria-label="Seconds" />
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-actions">
+      <button id="btn-start-game">
+        <span>Kick Off</span>
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <p class="setup-caption">Technical Precision Enabled</p>
+    </div>
   </main>
 
   <!-- Footer: links + copyright -->

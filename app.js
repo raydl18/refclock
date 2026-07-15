@@ -70,8 +70,16 @@ const btnNewGame     = $('btn-new-game');
 const colorA = $('color-a'), colorB = $('color-b');
 const swatchA = $('swatch-a'), swatchB = $('swatch-b');
 
-colorA.addEventListener('input', () => swatchA.style.background = colorA.value);
-colorB.addEventListener('input', () => swatchB.style.background = colorB.value);
+// Keep the swatch fill and the card's left accent bar in sync with the picker.
+function syncTeamAccent(colorInput, swatch) {
+  swatch.style.background = colorInput.value;
+  const card = swatch.closest('.team-setup');
+  if (card) card.style.setProperty('--team-accent', colorInput.value);
+}
+colorA.addEventListener('input', () => syncTeamAccent(colorA, swatchA));
+colorB.addEventListener('input', () => syncTeamAccent(colorB, swatchB));
+syncTeamAccent(colorA, swatchA);
+syncTeamAccent(colorB, swatchB);
 
 $('btn-start-game').addEventListener('click', async () => {
   const mins = Math.max(1, parseInt($('input-min').value)||45);
