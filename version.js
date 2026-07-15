@@ -5,7 +5,8 @@ const CHANGELOG = [
         version: '1.5.1',
         date: '2026-07-14',
         changes: ['Removed display name as a signup field entirely',
-            'Updated authentication flow to improve user experience'
+            'Updated authentication flow to improve user experience',
+            'Performed a full security audit'
         ]
     },
     {
