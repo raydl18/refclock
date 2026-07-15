@@ -1,7 +1,7 @@
 /* ── State ───────────────────────────────── */
 const state = {
   teams: [
-    { name: 'Home', color: '#1d4ed8', score: 0 },
+    { name: 'Home', color: '#0566d9', score: 0 },
     { name: 'Away', color: '#dc2626', score: 0 }
   ],
   events: [],          // { team, type, player, cardType, timestamp, elapsed }
@@ -236,7 +236,7 @@ function restoreSavedGame() {
       clearSavedState();
       return;
     }
-    const defaults = ['#1d4ed8', '#dc2626'];
+    const defaults = ['#0566d9', '#dc2626'];
     state.teams = s.teams.slice(0, 2).map((t, i) => ({
       name:  typeof t.name === 'string' ? t.name : (i === 0 ? 'Home' : 'Away'),
       color: safeColor(t.color, defaults[i]),

@@ -53,8 +53,8 @@
 
   /* Text */
   --on-surface:          #dae2fd;
-  --on-surface-variant:  #8a96b8;
-  --on-surface-muted:    #5a6480;
+  --on-surface-variant:  #bccbb9;  /* per DESIGN.md (was #8a96b8) */
+  --on-surface-muted:    #6b7a8f;
 
   /* Outlines */
   --outline:          rgba(255, 255, 255, 0.10);
@@ -571,8 +571,8 @@ button, input, textarea {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 8px;
-  gap: 8px;
+  padding: 20px 8px 28px;
+  gap: 10px;
   overflow: hidden;
   position: relative;
   transition: background 300ms;
@@ -592,31 +592,30 @@ button, input, textarea {
 
 .team-panel .team-label {
   font-family: var(--font-display);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  opacity: 0.85;
+  opacity: 0.7;
   text-align: center;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 4px 8px;
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: var(--radius-xs);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  padding: 0;
+  background: none;
 }
 
 .team-panel .score {
-  font-family: var(--font-mono);
-  font-size: 3.4rem;
+  font-family: var(--font-display);
+  font-size: 4.5rem;
   font-weight: 700;
+  font-style: italic;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  letter-spacing: -0.04em;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.4);
+  margin-top: 2px;
 }
 
 /* Event log */
@@ -681,13 +680,30 @@ button, input, textarea {
   align-items: center;
   gap: 2px;
 }
-.action-btn .action-icon { font-size: 1.3rem; }
+.action-btn .action-icon { font-size: 1.6rem; }
+/* Stroke-based soccer ball: size like an icon but keep fill:none (no .icon rule) */
+.action-btn svg.action-icon-ball { width: 1em; height: 1em; display: inline-block; }
 .action-btn:hover { border-color: rgba(255, 255, 255, 0.35); }
 .action-btn:active { transform: translateY(1px); background: rgba(0, 0, 0, 0.5); }
 
+/* Mini card pair — matches the Stitch design's yellow+red card glyph (no emoji) */
+.card-mini-pair {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+.card-mini {
+  width: 11px;
+  height: 15px;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.card-yellow { background: #facc15; }
+.card-red { background: #ef4444; }
+
 /* ─── CENTER PANEL (REFEREE COLUMN) ──────────── */
 #center-panel {
-  width: 116px;
+  width: 168px;
   flex-shrink: 0;
   background:
     radial-gradient(120% 60% at 50% 0%, rgba(75, 226, 119, 0.05) 0%, transparent 70%),
@@ -696,7 +712,7 @@ button, input, textarea {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 8px;
+  padding: 18px 10px;
   border-left: 1px solid var(--outline);
   border-right: 1px solid var(--outline);
   box-shadow:
@@ -710,15 +726,16 @@ button, input, textarea {
   font-family: var(--font-display);
   font-size: 0.6rem;
   font-weight: 700;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.4em;
+  padding-left: 0.4em; /* balance the trailing letter-spacing so text stays centered */
   color: var(--primary);
-  opacity: 0.8;
+  opacity: 0.9;
   text-transform: uppercase;
 }
 
 #clock {
   font-family: var(--font-mono);
-  font-size: 1.7rem;
+  font-size: 2.15rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
@@ -756,29 +773,27 @@ button, input, textarea {
 
 #status-label {
   font-family: var(--font-display);
-  font-size: 0.55rem;
+  font-size: 0.6rem;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--on-surface-muted);
+  color: var(--on-surface-variant);
+  opacity: 0.5;
   text-align: center;
-  padding: 3px 8px;
-  border: 1px solid var(--outline);
-  border-radius: var(--radius-xs);
+  padding: 0;
 }
 
 .center-controls {
   display: flex;
-  gap: 6px;
+  gap: 12px;
   align-items: center;
 }
 
 .ctrl-btn {
-  width: 44px;
-  height: 44px;
+  width: 64px;
+  height: 64px;
   border: 1px solid var(--outline-strong);
   border-radius: var(--radius-full);
-  font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -786,6 +801,7 @@ button, input, textarea {
   box-shadow: var(--edge-top-strong);
   transition: transform 100ms, box-shadow 200ms;
 }
+.ctrl-btn .icon { font-size: 34px; }
 .ctrl-btn:active { transform: scale(0.92); }
 .ctrl-btn:disabled { opacity: 0.3; pointer-events: none; }
 
@@ -806,19 +822,14 @@ button, input, textarea {
 }
 
 #btn-pause {
-  background: var(--tertiary-container);
-  color: #5c0008;
-  border-color: transparent;
-  box-shadow:
-    var(--edge-top-strong),
-    0 0 0 4px rgba(248, 113, 113, 0.12),
-    0 0 16px var(--tertiary-glow);
+  background: var(--surface-container-highest);
+  color: var(--on-surface-variant);
+  border-color: var(--outline-strong);
+  box-shadow: var(--edge-top-strong);
 }
 #btn-pause:hover:not(:disabled) {
-  box-shadow:
-    var(--edge-top-strong),
-    0 0 0 4px var(--tertiary-glow),
-    0 0 20px var(--tertiary-glow);
+  color: var(--on-surface);
+  border-color: rgba(255, 255, 255, 0.32);
 }
 
 .stoppage-controls {
@@ -881,22 +892,24 @@ button, input, textarea {
 
 #btn-end-game {
   width: 100%;
-  min-height: 36px;
-  padding: 8px 4px;
-  border: 1px solid rgba(248, 113, 113, 0.35);
-  border-radius: var(--radius-sm);
-  background: rgba(248, 113, 113, 0.10);
-  color: var(--tertiary-strong);
+  min-height: 42px;
+  padding: 11px 4px;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  background: var(--secondary-container);
+  color: #fff;
   font-family: var(--font-display);
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 150ms, transform 100ms;
+  box-shadow: 0 6px 16px -6px rgba(5, 102, 217, 0.6);
+  transition: filter 150ms, transform 100ms;
 }
-#btn-end-game:hover { background: rgba(248, 113, 113, 0.18); }
-#btn-end-game:active { transform: translateY(1px); }
+#btn-end-game:hover { filter: brightness(1.1); }
+#btn-end-game:active { transform: scale(0.98); }
 
 #notes-details {
   width: 100%;

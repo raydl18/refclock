@@ -39,9 +39,9 @@
 
       <!-- Team A -->
       <div class="team-setup">
-        <div class="team-color-swatch swatch-home" id="swatch-a" style="background:#1d4ed8;">
+        <div class="team-color-swatch swatch-home" id="swatch-a" style="background:#0566d9;">
           <svg class="team-icon icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          <input type="color" id="color-a" value="#1d4ed8" aria-label="Home team color" />
+          <input type="color" id="color-a" value="#0566d9" aria-label="Home team color" />
         </div>
         <div class="team-setup-body">
           <span class="team-setup-label">Home Team</span>
@@ -136,10 +136,10 @@
     <div class="events-log" id="log-a"></div>
     <div class="team-actions">
       <button class="action-btn" id="goal-a">
-        <span class="action-icon">⚽</span>Goal
+        <svg class="action-icon action-icon-ball" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7l4.76 3.45l-1.76 5.55h-6l-1.76 -5.55z"/><path d="M12 7v-4"/><path d="M15 16l2.5 3"/><path d="M14.26 10.45l3.74 -1.45"/><path d="M9 16l-2.5 3"/><path d="M9.74 10.45l-3.74 -1.45"/></svg>Goal
       </button>
       <button class="action-btn" id="card-a">
-        <span class="action-icon">🟨</span>Card
+        <span class="action-icon card-mini-pair"><span class="card-mini card-yellow"></span><span class="card-mini card-red"></span></span>Card
       </button>
     </div>
   </div>
@@ -153,8 +153,12 @@
     </div>
     <div id="status-label">Ready</div>
     <div class="center-controls">
-      <button class="ctrl-btn" id="btn-play">▶</button>
-      <button class="ctrl-btn" id="btn-pause" disabled>⏸</button>
+      <button class="ctrl-btn" id="btn-play" aria-label="Start timer">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="ctrl-btn" id="btn-pause" disabled aria-label="Pause timer">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
     </div>
     <div class="stoppage-controls">
       <button class="stoppage-btn" id="btn-retract">- Time</button>
@@ -174,10 +178,10 @@
     <div class="events-log" id="log-b"></div>
     <div class="team-actions">
       <button class="action-btn" id="goal-b">
-        <span class="action-icon">⚽</span>Goal
+        <svg class="action-icon action-icon-ball" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7l4.76 3.45l-1.76 5.55h-6l-1.76 -5.55z"/><path d="M12 7v-4"/><path d="M15 16l2.5 3"/><path d="M14.26 10.45l3.74 -1.45"/><path d="M9 16l-2.5 3"/><path d="M9.74 10.45l-3.74 -1.45"/></svg>Goal
       </button>
       <button class="action-btn" id="card-b">
-        <span class="action-icon">🟨</span>Card
+        <span class="action-icon card-mini-pair"><span class="card-mini card-yellow"></span><span class="card-mini card-red"></span></span>Card
       </button>
     </div>
   </div>
