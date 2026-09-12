@@ -3,3 +3,14 @@ node_modules/
 *.log
 .env
 .env.local
+.agents/
+.claude-flow/
+.claude/agents/
+.claude/commands/
+.claude/helpers/
+.claude/skills/
+.mcp.json
+.swarm/
+ruvector.db
+skills-lock.json
+*.pre-ruflo.bak
