@@ -1,4 +1,4 @@
-const CACHE = 'refclock-v14';
+const CACHE = 'refclock-v15';
 const ASSETS = [
   '/refclock', '/refclock/index.html', '/refclock/style.css', '/refclock/app.js',
   '/refclock/supabase.js', '/refclock/version.js', '/refclock/manifest.json',

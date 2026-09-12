@@ -1,7 +1,7 @@
 /* ── State ───────────────────────────────── */
 const state = {
   teams: [
-    { name: 'Home', color: '#1d4ed8', score: 0 },
+    { name: 'Home', color: '#0566d9', score: 0 },
     { name: 'Away', color: '#dc2626', score: 0 }
   ],
   events: [],          // { team, type, player, cardType, timestamp, elapsed }
@@ -70,8 +70,16 @@ const btnNewGame     = $('btn-new-game');
 const colorA = $('color-a'), colorB = $('color-b');
 const swatchA = $('swatch-a'), swatchB = $('swatch-b');
 
-colorA.addEventListener('input', () => swatchA.style.background = colorA.value);
-colorB.addEventListener('input', () => swatchB.style.background = colorB.value);
+// Keep the swatch fill and the card's left accent bar in sync with the picker.
+function syncTeamAccent(colorInput, swatch) {
+  swatch.style.background = colorInput.value;
+  const card = swatch.closest('.team-setup');
+  if (card) card.style.setProperty('--team-accent', colorInput.value);
+}
+colorA.addEventListener('input', () => syncTeamAccent(colorA, swatchA));
+colorB.addEventListener('input', () => syncTeamAccent(colorB, swatchB));
+syncTeamAccent(colorA, swatchA);
+syncTeamAccent(colorB, swatchB);
 
 $('btn-start-game').addEventListener('click', async () => {
   const mins = Math.max(1, parseInt($('input-min').value)||45);
@@ -107,6 +115,7 @@ $('btn-start-game').addEventListener('click', async () => {
   $('notes-ingame').value = loadNotes();
   setupScreen.style.display = 'none';
   gameScreen.classList.add('active');
+  document.body.classList.add('in-game');
 
   await requestNotifPermission();
 });
@@ -236,7 +245,7 @@ function restoreSavedGame() {
       clearSavedState();
       return;
     }
-    const defaults = ['#1d4ed8', '#dc2626'];
+    const defaults = ['#0566d9', '#dc2626'];
     state.teams = s.teams.slice(0, 2).map((t, i) => ({
       name:  typeof t.name === 'string' ? t.name : (i === 0 ? 'Home' : 'Away'),
       color: safeColor(t.color, defaults[i]),
@@ -269,6 +278,7 @@ function restoreSavedGame() {
     $('notes-ingame').value = loadNotes();
     setupScreen.style.display = 'none';
     gameScreen.classList.add('active');
+    document.body.classList.add('in-game');
 
     if (state.remaining <= 0) {
       clockEl.classList.add('danger');
@@ -464,9 +474,14 @@ $('goal-b').addEventListener('click', () => openModal(1, 'goal'));
 $('card-b').addEventListener('click', () => openModal(1, 'card'));
 
 /* ── Event log rendering ─────────────────── */
+// Inline-SVG/markup icons (no emoji) — consistent with the rest of the UI and
+// safe to inject: the markup here is static, never user-controlled.
 function eventIcon(ev) {
-  if (ev.type === 'goal') return '⚽';
-  return ev.cardType === 'red' ? '🟥' : '🟨';
+  if (ev.type === 'goal') {
+    return '<svg class="ev-ico ev-ball" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7l4.76 3.45l-1.76 5.55h-6l-1.76 -5.55z"/><path d="M12 7v-4"/><path d="M15 16l2.5 3"/><path d="M14.26 10.45l3.74 -1.45"/><path d="M9 16l-2.5 3"/><path d="M9.74 10.45l-3.74 -1.45"/></svg>';
+  }
+  const cls = ev.cardType === 'red' ? 'ev-card-r' : 'ev-card-y';
+  return `<span class="ev-ico ev-card ${cls}" aria-hidden="true"></span>`;
 }
 
 function eventLabel(ev) {
@@ -516,11 +531,13 @@ function showEndGame() {
 
   $('final-scoreboard').innerHTML = `
     <div class="final-team" style="background:${escapeHTML(a.color)};color:${textColor(a.color)}">
+      <div class="final-team-side">Home</div>
       <div class="final-team-name">${escapeHTML(a.name)}</div>
       <div class="final-score">${escapeHTML(a.score)}</div>
     </div>
-    <div class="final-vs">–</div>
+    <div class="final-vs">FT</div>
     <div class="final-team" style="background:${escapeHTML(b.color)};color:${textColor(b.color)}">
+      <div class="final-team-side">Away</div>
       <div class="final-team-name">${escapeHTML(b.name)}</div>
       <div class="final-score">${escapeHTML(b.score)}</div>
     </div>
@@ -594,6 +611,8 @@ btnNewGame.addEventListener('click', () => {
   saveBtn.disabled = false;
   saveBtn.textContent = 'Save Game';
   setupScreen.style.display = '';
+  document.body.classList.remove('in-game');
+  showView('timer');
 });
 
 /* ── Service worker ─────────────────────── */
@@ -621,16 +640,38 @@ function setAuthState(user) {
   if (user) {
     $('auth-signed-out').style.display = 'none';
     $('auth-signed-in').style.display  = '';
-    const name = user.user_metadata?.display_name;
-    $('auth-greeting').textContent = name ? `Hey, ${name}` : user.email;
-    $('btn-history').style.display     = '';
+    $('account-email').textContent = user.email;
     closeAuthModal();
   } else {
     $('auth-signed-out').style.display = '';
     $('auth-signed-in').style.display  = 'none';
-    $('btn-history').style.display     = 'none';
+    closeAccountMenu();
   }
+  // History is always reachable now; refresh it if it's the current view.
+  if ($('history-overlay').classList.contains('show')) loadHistory();
 }
+
+/* Account popover (member icon → email + sign out) */
+function closeAccountMenu() {
+  const menu = $('account-menu');
+  if (menu) menu.hidden = true;
+  const btn = $('btn-account');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+$('btn-account').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const menu = $('account-menu');
+  const willOpen = menu.hidden;
+  menu.hidden = !willOpen;
+  $('btn-account').setAttribute('aria-expanded', String(willOpen));
+});
+
+// Dismiss the popover when clicking anywhere outside it.
+document.addEventListener('click', (e) => {
+  const menu = $('account-menu');
+  if (menu && !menu.hidden && !e.target.closest('#auth-signed-in')) closeAccountMenu();
+});
 
 function openAuthModal(panel) {
   showAuthPanel(panel || 'signin');
@@ -682,16 +723,10 @@ $('btn-do-signin').addEventListener('click', async () => {
 });
 
 $('btn-do-signup').addEventListener('click', async () => {
-  const name     = $('su-name').value.trim();
   const email    = $('su-email').value.trim();
   const password = $('su-password').value;
   const confirm  = $('su-confirm').value;
   const el       = $('su-error');
-  if (!name) {
-    el.textContent = 'Please enter a display name.';
-    el.style.display = '';
-    return;
-  }
   if (!email || !password) return;
   if (password !== confirm) {
     el.textContent = 'Passwords do not match.';
@@ -704,7 +739,7 @@ $('btn-do-signup').addEventListener('click', async () => {
     return;
   }
   setAuthBtnLoading('btn-do-signup', true, 'Create Account');
-  const { error } = await SupabaseAPI.signUp(email, password, name);
+  const { error } = await SupabaseAPI.signUp(email, password);
   setAuthBtnLoading('btn-do-signup', false, 'Create Account');
   if (error) {
     el.textContent   = error.message;
@@ -743,10 +778,24 @@ function fmtDate(iso) {
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-async function openHistory() {
+async function loadHistory() {
   const list = $('history-list');
+
+  // History is browsable while logged out — prompt them to create an account to save.
+  if (!currentUser) {
+    list.innerHTML = `
+      <div class="history-signin-prompt">
+        <svg class="prompt-icon icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+        <div class="prompt-title">Save your match history</div>
+        <div class="prompt-text">Create a free account to save games and revisit scores, cards, and notes any time.</div>
+        <button class="prompt-btn" id="history-signup-btn">Sign In / Sign Up</button>
+      </div>`;
+    const signupBtn = $('history-signup-btn');
+    if (signupBtn) signupBtn.addEventListener('click', () => openAuthModal('signup'));
+    return;
+  }
+
   list.innerHTML = '<div class="history-loading">Loading…</div>';
-  $('history-overlay').classList.add('show');
 
   const { data: games, error } = await SupabaseAPI.fetchGames();
   if (error) {
@@ -804,10 +853,40 @@ function openGameDetail(g) {
   $('game-detail-overlay').classList.add('show');
 }
 
-$('btn-history').addEventListener('click', openHistory);
-$('btn-history-close').addEventListener('click', () => {
-  $('history-overlay').classList.remove('show');
-});
+/* ── Bottom-nav router ───────────────────────── */
+// The nav routes between three "home shell" views. Timer = setup screen (the
+// base layer); History and Settings are overlays shown on top of it. The nav
+// itself is a persistent fixed element, so it replaces the old per-overlay ✕.
+const navBtns = {
+  timer:    $('btn-nav-timer'),
+  history:  $('btn-history'),
+  settings: $('btn-help'),
+};
+
+function setNavActive(view) {
+  Object.entries(navBtns).forEach(([key, btn]) => {
+    if (!btn) return;
+    const active = key === view;
+    btn.classList.toggle('nav-btn-active', active);
+    if (active) btn.setAttribute('aria-current', 'page');
+    else btn.removeAttribute('aria-current');
+  });
+}
+
+function showView(view) {
+  $('game-detail-overlay').classList.remove('show');
+  $('history-overlay').classList.toggle('show', view === 'history');
+  $('help-overlay').classList.toggle('show', view === 'settings');
+  setNavActive(view);
+  if (view === 'history') loadHistory();
+  else if (view === 'settings') renderHelp();
+}
+
+navBtns.timer.addEventListener('click', () => showView('timer'));
+navBtns.history.addEventListener('click', () => showView('history'));
+navBtns.settings.addEventListener('click', () => showView('settings'));
+
+// Drill-in game detail sits above the history list; Back returns to it.
 $('btn-game-detail-back').addEventListener('click', () => {
   $('game-detail-overlay').classList.remove('show');
 });
@@ -881,15 +960,6 @@ function renderHelp() {
   accountLink.textContent = 'Delete account & data';
   list.append(accountLink);
 }
-
-function openHelp() {
-  renderHelp();
-  $('help-overlay').classList.add('show');
-}
-$('btn-help').addEventListener('click', openHelp);
-$('btn-help-close').addEventListener('click', () => {
-  $('help-overlay').classList.remove('show');
-});
 
 /* ── Notes ───────────────────────────────────── */
 function loadNotes() {

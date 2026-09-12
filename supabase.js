@@ -4,11 +4,8 @@ const SUPABASE_ANON_KEY = 'sb_publishable_MrasY7nJvnsGC1WKvVlTZg_CW3qfHxj';
 
 const _client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-async function signUp(email, password, displayName) {
-  const { data, error } = await _client.auth.signUp({
-    email, password,
-    options: { data: { display_name: displayName } },
-  });
+async function signUp(email, password) {
+  const { data, error } = await _client.auth.signUp({ email, password });
   return { user: data?.user, error };
 }
 

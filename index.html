@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <!-- Content-Security-Policy: defense-in-depth against XSS. No inline <script> is
+       used, so script-src omits 'unsafe-inline' (injected scripts are blocked).
+       style-src keeps 'unsafe-inline' because inline style="" attributes are used.
+       connect-src is limited to Supabase (REST/auth + realtime wss). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://glrecozajprxtxtfiped.supabase.co wss://glrecozajprxtxtfiped.supabase.co; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -24,24 +29,38 @@
     </div>
     <div id="auth-bar">
       <div id="auth-signed-out">
-        <button class="auth-btn auth-btn-link" id="btn-signin-show">Sign In</button>
+        <button class="auth-chip" id="btn-signin-show">
+          <span>Sign In</span>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+        </button>
       </div>
       <div id="auth-signed-in" style="display:none">
-        <span id="auth-greeting"></span>
-        <button class="auth-btn auth-btn-link" id="btn-signout">Sign out</button>
+        <button class="auth-chip auth-chip-icon" id="btn-account" aria-label="Account" aria-haspopup="true" aria-expanded="false">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </button>
+        <div class="account-menu" id="account-menu" role="menu" hidden>
+          <div class="account-email" id="account-email"></div>
+          <button class="account-signout" id="btn-signout" role="menuitem">Sign out</button>
+        </div>
       </div>
     </div>
   </header>
 
   <!-- Main content -->
   <main class="setup-main">
+
+    <div class="setup-heading">
+      <h2 class="setup-title">Match Setup</h2>
+      <p class="setup-subtitle">Configure team names and colors.</p>
+    </div>
+
     <div class="setup-row">
 
       <!-- Team A -->
       <div class="team-setup">
-        <div class="team-color-swatch swatch-home" id="swatch-a" style="background:#1d4ed8;">
+        <div class="team-color-swatch swatch-home" id="swatch-a" style="background:#0566d9;">
           <svg class="team-icon icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          <input type="color" id="color-a" value="#1d4ed8" aria-label="Home team color" />
+          <input type="color" id="color-a" value="#0566d9" aria-label="Home team color" />
         </div>
         <div class="team-setup-body">
           <span class="team-setup-label">Home Team</span>
@@ -63,23 +82,28 @@
         </div>
       </div>
 
-      <!-- Duration -->
-      <div class="duration-setup">
-        <span class="duration-label">Time Per Half</span>
-        <div class="time-inputs">
-          <div class="time-cell">
-            <input type="number" id="input-min" value="45" min="1" max="99" aria-label="Minutes" />
-          </div>
-          <span class="time-sep">:</span>
-          <div class="time-cell">
-            <input type="number" id="input-sec" value="00" min="0" max="59" aria-label="Seconds" />
-          </div>
-        </div>
-      </div>
-
     </div>
 
-    <button id="btn-start-game">Kick Off</button>
+    <!-- Duration (plain — no card box) -->
+    <div class="duration-setup">
+      <span class="duration-label">Time Per Half</span>
+      <div class="time-inputs">
+        <div class="time-cell">
+          <input type="number" id="input-min" value="45" min="1" max="99" aria-label="Minutes" />
+        </div>
+        <span class="time-sep">:</span>
+        <div class="time-cell">
+          <input type="number" id="input-sec" value="00" min="0" max="59" aria-label="Seconds" />
+        </div>
+      </div>
+    </div>
+
+    <div class="setup-actions">
+      <button id="btn-start-game">
+        <span>Kick Off</span>
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+    </div>
   </main>
 
   <!-- Footer: links + copyright -->
@@ -87,25 +111,12 @@
     <div class="footer-copyright">© 2026 REFCLOCK TELEMETRY</div>
   </footer>
 
-  <!-- Bottom nav -->
-  <nav id="setup-nav" aria-label="Primary">
-    <button type="button" class="nav-btn nav-btn-active" aria-label="Setup" aria-current="page">
-      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
-    </button>
-    <button type="button" class="nav-btn" id="btn-history" style="display:none" aria-label="Match history">
-      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
-    </button>
-    <button type="button" class="nav-btn" id="btn-help" aria-label="Settings and help">
-      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-    </button>
-  </nav>
 </div>
 
 <!-- ═══════════════ HISTORY OVERLAY ══════════ -->
 <div id="history-overlay">
   <div id="history-header">
     <span id="history-title">Match History</span>
-    <button id="btn-history-close">✕</button>
   </div>
   <div id="history-list"></div>
 </div>
@@ -121,10 +132,22 @@
  <div id="help-overlay">
   <div id="help-header">
     <span id="help-title">Help and Changelog</span>
-    <button id="btn-help-close">✕</button>
   </div>
   <div id="help-list"></div>
  </div>
+
+<!-- ═══════════════ BOTTOM NAV (persistent router) ══════════ -->
+<nav id="setup-nav" aria-label="Primary">
+  <button type="button" class="nav-btn nav-btn-active" id="btn-nav-timer" aria-label="Timer" aria-current="page">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+  </button>
+  <button type="button" class="nav-btn" id="btn-history" aria-label="Match history">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+  </button>
+  <button type="button" class="nav-btn" id="btn-help" aria-label="Settings and help">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+  </button>
+</nav>
 
 <!-- ═══════════════ GAME SCREEN ════════════════ -->
 <div id="game-screen">
@@ -136,10 +159,10 @@
     <div class="events-log" id="log-a"></div>
     <div class="team-actions">
       <button class="action-btn" id="goal-a">
-        <svg class="icon action-icon" viewBox="0 -960 960 960" aria-hidden="true"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm200-500 54-18 16-54q-32-48-77-82.5T574-786l-54 38v56l160 112Zm-400 0 160-112v-56l-54-38q-54 17-99 51.5T210-652l16 54 54 18Zm-42 308 46-4 30-54-58-174-56-20-40 30q0 65 18 118.5T238-272Zm293 108q25-4 49-12l28-60-26-44H378l-26 44 28 60q24 8 49 12t51 4q26 0 51-4ZM390-360h180l56-160-146-102-144 102 54 160Zm332 88q42-50 60-103.5T800-494l-40-28-56 18-58 174 30 54 46 4Z"/></svg>Goal
+        <svg class="action-icon action-icon-ball" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7l4.76 3.45l-1.76 5.55h-6l-1.76 -5.55z"/><path d="M12 7v-4"/><path d="M15 16l2.5 3"/><path d="M14.26 10.45l3.74 -1.45"/><path d="M9 16l-2.5 3"/><path d="M9.74 10.45l-3.74 -1.45"/></svg>Goal
       </button>
       <button class="action-btn" id="card-a">
-        <span class="action-icon">🟨</span>Card
+        <span class="action-icon card-mini-pair"><span class="card-mini card-yellow"></span><span class="card-mini card-red"></span></span>Card
       </button>
     </div>
   </div>
@@ -153,8 +176,8 @@
     </div>
     <div id="status-label">Ready</div>
     <div class="center-controls">
-      <button class="ctrl-btn" id="btn-play"><svg class="icon" viewBox="0 -960 960 960" aria-hidden="true"><path d="M320-200v-560l440 280-440 280Zm80-280Zm0 134 210-134-210-134v268Z"/></svg></button>
-      <button class="ctrl-btn" id="btn-pause" disabled><svg class="icon" viewBox="0 -960 960 960" aria-hidden="true"><path d="M520-200v-560h240v560H520Zm-320 0v-560h240v560H200Zm400-80h80v-400h-80v400Zm-320 0h80v-400h-80v400Zm0-400v400-400Zm320 0v400-400Z"/></svg></button>
+      <button class="ctrl-btn" id="btn-play">▶</button>
+      <button class="ctrl-btn" id="btn-pause" disabled>⏸</button>
     </div>
     <div class="stoppage-controls">
       <button class="stoppage-btn" id="btn-retract">- Time</button>
@@ -174,10 +197,10 @@
     <div class="events-log" id="log-b"></div>
     <div class="team-actions">
       <button class="action-btn" id="goal-b">
-        <svg class="icon action-icon" viewBox="0 -960 960 960" aria-hidden="true"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm200-500 54-18 16-54q-32-48-77-82.5T574-786l-54 38v56l160 112Zm-400 0 160-112v-56l-54-38q-54 17-99 51.5T210-652l16 54 54 18Zm-42 308 46-4 30-54-58-174-56-20-40 30q0 65 18 118.5T238-272Zm293 108q25-4 49-12l28-60-26-44H378l-26 44 28 60q24 8 49 12t51 4q26 0 51-4ZM390-360h180l56-160-146-102-144 102 54 160Zm332 88q42-50 60-103.5T800-494l-40-28-56 18-58 174 30 54 46 4Z"/></svg>Goal
+        <span class="action-icon">⚽</span>Goal
       </button>
       <button class="action-btn" id="card-b">
-        <span class="action-icon">🟨</span>Card
+        <span class="action-icon card-mini-pair"><span class="card-mini card-yellow"></span><span class="card-mini card-red"></span></span>Card
       </button>
     </div>
   </div>
@@ -215,7 +238,10 @@
 
 <!-- ═══════════════ END GAME OVERLAY ══════════ -->
 <div id="endgame-overlay">
-  <h2>Final Whistle</h2>
+  <div class="endgame-head">
+    <span class="endgame-eyebrow">Match Concluded</span>
+    <h2>Final Whistle</h2>
+  </div>
 
   <div class="final-scoreboard" id="final-scoreboard"></div>
 
@@ -254,7 +280,6 @@
 
     <!-- Sign up -->
     <div id="panel-signup" style="display:none">
-      <input type="text" id="su-name" placeholder="Display name" autocomplete="nickname" maxlength="32" />
       <input type="email" id="su-email" placeholder="Email" autocomplete="email" />
       <input type="password" id="su-password" placeholder="Password" autocomplete="new-password" />
       <input type="password" id="su-confirm" placeholder="Confirm password" autocomplete="new-password" />

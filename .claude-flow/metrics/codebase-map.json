@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-07-15T02:41:26.716Z",
+  "projectRoot": "/Users/rayray/code/refclock",
+  "structure": {
+    "hasPackageJson": true,
+    "hasTsConfig": false,
+    "hasClaudeConfig": true,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1784083286716
+}
