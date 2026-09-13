@@ -21,6 +21,11 @@ async function resetPassword(email) {
   return error;
 }
 
+async function updatePassword(newPassword) {
+  const { error } = await _client.auth.updateUser({ password: newPassword});
+  return error;
+}
+
 async function signOut() {
   const { error } = await _client.auth.signOut();
   return error;
@@ -45,9 +50,16 @@ async function fetchGames() {
   return { data: data || [], error };
 }
 
-function onAuthStateChange(callback) {
+function onAuthStateChange(callback) {1
   _client.auth.onAuthStateChange((_event, session) => {
+    if (event === 'PASSWORD_RECOVERY') return;
     callback(session ? session.user : null);
+  });
+}
+
+function onPasswordRecovery(callback) {
+  _client.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') callback();
   });
 }
 
