@@ -1395,6 +1395,8 @@ body.in-game #setup-nav { display: none; }
   align-items: center;
 }
 #endgame-overlay.show { display: flex; }
+/* setting flex shrink to 0 because shrinking cuts out the final scoreboard */
+#endgame-overlay > * { flex-shrink: 0; }
 
 /* Header: eyebrow + title */
 .endgame-head {
