@@ -295,6 +295,14 @@
       <button class="auth-submit-btn" id="btn-do-reset">Send Reset Email</button>
       <button class="auth-link-btn" id="btn-reset-back">Back to Sign In</button>
     </div>
+
+    <!-- New password (arrived via emailed reset link) -->
+    </div id="panel-newpass" style="display:none">
+      <p class="auth-reset-info">Choose a new password for your account.</p>
+      <input type="password" id="np-password" placeholder="New password" autocomplete="new-password" />
+      <input type="password" id="np-confirm" placeholder="Confirm new password" autocomplete="new-password" />
+      <p class="auth-error" id="np-error" style="display:none"></p>
+      <button class="auth-submit-btn" id="btn-do-newpass">Update Password</button>
   </div>
 </div>
 

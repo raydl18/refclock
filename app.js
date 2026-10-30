@@ -634,6 +634,7 @@ btnPlay.addEventListener('click', async () => {
 
 /* ── Auth UI ─────────────────────────────── */
 let currentUser = null;
+let recoveryMode = false; // Recovery mode is when a user resets their password
 
 function setAuthState(user) {
   currentUser = user;
@@ -641,7 +642,8 @@ function setAuthState(user) {
     $('auth-signed-out').style.display = 'none';
     $('auth-signed-in').style.display  = '';
     $('account-email').textContent = user.email;
-    closeAuthModal();
+    // Recovery link returns them to the page as user, so only in this condition
+    if (!recoveryMode) closeAuthModal();
   } else {
     $('auth-signed-out').style.display = '';
     $('auth-signed-in').style.display  = 'none';
@@ -683,15 +685,24 @@ function closeAuthModal() {
 }
 
 function showAuthPanel(name) {
-  ['signin', 'signup', 'reset'].forEach(p => {
+  ['signin', 'signup', 'reset', 'newpass'].forEach(p => {
     $(`panel-${p}`).style.display = p === name ? '' : 'none';
     const tab = $(`tab-${p}`);
     if (tab) tab.classList.toggle('selected', p === name);
   });
-  ['si-error', 'su-error', 'reset-msg'].forEach(id => {
+  ['si-error', 'su-error', 'reset-msg', 'np-error'].forEach(id => {
     const el = $(id);
     if (el) el.style.display = 'none';
   });
+}
+
+// Entry function for recovery mode so that users can't escape into an authenticated state before setting a password
+function enterRecoveryMode() {
+  if (recoveryMode) return; // both triggers may fire
+  recoveryMode = true;
+  $('auth-tabs').style.display = 'none';
+  $('btn-auth-close').style.display = 'none';
+  openAuthModal('newpass');
 }
 
 function setAuthBtnLoading(id, loading, label) {

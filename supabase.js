@@ -50,8 +50,8 @@ async function fetchGames() {
   return { data: data || [], error };
 }
 
-function onAuthStateChange(callback) {1
-  _client.auth.onAuthStateChange((_event, session) => {
+function onAuthStateChange(callback) {
+  _client.auth.onAuthStateChange((event, session) => {
     if (event === 'PASSWORD_RECOVERY') return;
     callback(session ? session.user : null);
   });
@@ -63,4 +63,10 @@ function onPasswordRecovery(callback) {
   });
 }
 
-window.SupabaseAPI = { signUp, signInWithPassword, resetPassword, signOut, getUser, saveGame, fetchGames, onAuthStateChange };
+function isRecoveryLink() {
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  return params.get('type') === 'recovery';
+}
+
+window.SupabaseAPI = { signUp, signInWithPassword, resetPassword, signOut, getUser, saveGame, fetchGames, 
+  onAuthStateChange, updatePassword, onPasswordRecovery, isRecoveryLink };
